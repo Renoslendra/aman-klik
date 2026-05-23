@@ -14,7 +14,7 @@ AmanKlik AI adalah platform keamanan digital berbasis web yang membantu masyarak
 
 ## Demo
 
-Live demo: [https://amanklik-frontend-575126371408.asia-southeast1.run.app](https://amanklik-frontend-575126371408.asia-southeast1.run.app)
+Live demo: [https://amanklik-575126371408.asia-southeast1.run.app](https://amanklik-575126371408.asia-southeast1.run.app)
 
 Screenshot: gunakan halaman utama AmanKlik AI setelah deploy untuk menampilkan demo analisis pesan real-time.
 
