@@ -1,193 +1,310 @@
-# AmanKlik AI - Cek dulu sebelum klik
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Space+Grotesk&size=25&pause=1000&color=3B82F6&center=true&vCenter=true&width=1000&lines=Welcome+to+AmanKlik+AI;Platform+Deteksi+Penipuan+Digital+Indonesia;Cek+Dulu+Sebelum+Klik!;Juara+Vibe+Coding+2026" alt="AmanKlik AI" />
+</p>
 
-![Next.js](https://img.shields.io/badge/Next.js-16.2.6-black?logo=nextdotjs)
-![React](https://img.shields.io/badge/React-19.2.4-61DAFB?logo=react&logoColor=111)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)
-![Express](https://img.shields.io/badge/Express-4.21-000000?logo=express)
-![Prisma](https://img.shields.io/badge/Prisma-7.8-2D3748?logo=prisma)
-![PostgreSQL](https://img.shields.io/badge/Supabase_PostgreSQL-ready-3FCF8E?logo=supabase&logoColor=white)
-![Gemini](https://img.shields.io/badge/Gemini_2.5_Flash-AI-4285F4?logo=google)
-![Build](https://img.shields.io/badge/build-production_ready-brightgreen)
-![License](https://img.shields.io/badge/license-MIT-blue)
+<p align="center">
+    <img src="https://img.shields.io/badge/Next.js_15-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" />
+    <img src="https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+    <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Tailwind_CSS_v4-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+    <img src="https://img.shields.io/badge/Framer_Motion-00C58E?style=for-the-badge&logo=framer&logoColor=white" alt="Framer Motion" /><br>
+    <img src="https://img.shields.io/badge/Express_4-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express" />
+    <img src="https://img.shields.io/badge/Prisma_7-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma" />
+    <img src="https://img.shields.io/badge/Supabase_Postgres-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
+    <img src="https://img.shields.io/badge/Gemini_2.5_Flash-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Gemini" />
+    <img src="https://img.shields.io/badge/Google_Cloud_Run-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white" alt="GCP Run" />
+</p>
 
-AmanKlik AI adalah platform keamanan digital berbasis web yang membantu masyarakat Indonesia mengenali pesan penipuan sebelum mengklik link, mentransfer uang, atau mengirim data pribadi. Pengguna cukup menempelkan pesan dari SMS, WhatsApp, email, link mencurigakan, atau mengunggah screenshot chat, lalu Gemini AI memberi skor risiko, tanda bahaya, dan langkah aman dalam Bahasa Indonesia.
+<p align="center">
+  <strong><i>Platform Keamanan Digital & Deteksi Penipuan Berbasis Gemini 2.5 Flash AI.</i></strong>
+  <br />
+  Solusi Pintar untuk Menganalisis Pesan, Link, dan Chat Screenshot Sebelum Mengklik atau Mengirim Data Pribadi.
+  <br />
+  Proyek Khusus untuk Kompetisi <strong>#JuaraVibeCoding2026</strong>.
+</p>
 
-## Demo
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
 
-Live demo: [https://amanklik-575126371408.asia-southeast1.run.app](https://amanklik-575126371408.asia-southeast1.run.app)
+## 🚀 Live Demo & Akses Cepat
 
-Screenshot: gunakan halaman utama AmanKlik AI setelah deploy untuk menampilkan demo analisis pesan real-time.
+Aplikasi ini telah dideploy secara penuh ke Google Cloud Run dengan performa maksimal dan latensi rendah.
 
-## Masalah yang Diselesaikan
+> [!TIP]
+> **Uji Coba Langsung di Browser Anda:**  
+> 🔗 **[https://amanklik-575126371408.asia-southeast1.run.app](https://amanklik-575126371408.asia-southeast1.run.app)**
 
-Indonesia #1 di Asia Tenggara untuk kasus penipuan digital, sehingga banyak keluarga menerima pesan palsu yang terlihat meyakinkan, seperti modus kurir APK, undian berhadiah, pinjol ilegal, phishing OTP, atau impersonasi bank.
+---
 
-AmanKlik AI membantu pengguna non-teknis membuat keputusan cepat: apakah pesan tersebut aman, mencurigakan, atau berisiko tinggi.
+## 🏆 Mengapa Proyek Ini Siap Memenangkan Kompetisi?
 
-## Fitur Utama
+Dalam ajang **#JuaraVibeCoding2026**, sebuah aplikasi dinilai berdasarkan inovasi, kualitas arsitektur, kedalaman pemanfaatan AI, serta antarmuka pengguna yang memukau.
 
-- 🛡️ **Analisis AI Real-time** - Gemini 2.5 Flash menganalisis teks, link, dan screenshot untuk menghasilkan skor risiko 0-100.
-- 🔐 **Autentikasi Google OAuth2** - Login Google terhubung ke JWT session dan profil pengguna di database.
-- 📊 **Dashboard Riwayat Pemindaian** - Riwayat scan tersimpan di Supabase PostgreSQL dengan filter, statistik, pagination, dan hapus data.
-- 🎨 **UI Premium** - Glassmorphism, particles, Framer Motion, dan efek visual interaktif untuk pengalaman web modern.
-- 🇮🇩 **100% Bahasa Indonesia** - Prompt AI dan rekomendasi keamanan disesuaikan dengan modus penipuan lokal.
+| Pilar Penilaian | Kriteria Utama | Solusi & Inovasi AmanKlik AI |
+|---|---|---|
+| 🧠 **Pemanfaatan AI** | Apakah AI diimplementasikan secara efektif dan bukan gimik? | Menggunakan **Gemini 2.5 Flash** untuk analisis multi-modal (teks pesan & gambar screenshot). AI mengevaluasi indikator *social engineering*, link phishing, file berbahaya (.APK), dan memberikan skor risiko serta panduan mitigasi keamanan siber. |
+| 📊 **Kualitas Arsitektur** | Keandalan, keamanan, dan skalabilitas monorepo. | Membagi sistem menjadi **Frontend Next.js (App Router)** & **Backend Express (TypeScript ESM)**. Dilengkapi dengan secure headers (Helmet), IP Rate Limiter, autentikasi aman Google OAuth2 + stateless JWT session, serta integrasi database Supabase PostgreSQL via Prisma ORM. |
+| 🎨 **UI/UX Premium** | Visual yang memukau dan pengalaman pengguna yang halus. | Menggunakan antarmuka bertema **Glassmorphism modern** dengan efek micro-interactions dinamis (Framer Motion), layout modern, dashboard statistik riwayat pemindaian yang interaktif, serta visual charting. |
+| 🇮🇩 **Dampak Nyata** | Relevansi sosial untuk publik lokal. | Menyelesaikan masalah darurat penipuan digital di Indonesia (modus paket kurir APK, pinjol ilegal, impersonasi bank, kupon hadiah palsu) dengan bahasa yang ramah keluarga dan mudah dipahami oleh segala kalangan usia. |
 
-## Tech Stack
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
 
-| Layer | Teknologi |
-|---|---|
-| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS v4, Framer Motion, OGL |
-| Backend | Express 4, TypeScript ESM, Helmet, CORS, rate limiting, Winston |
-| Database | Supabase PostgreSQL, Prisma ORM |
-| AI | Google Gemini 2.5 Flash via `@google/genai` |
-| Auth | Google OAuth2, JWT |
-| Deployment | Google Cloud Run (Frontend + Backend) |
+## 🧬 Arsitektur Sistem Lengkap
 
-## Cara Menjalankan Lokal
+Visualisasi alur komunikasi data end-to-end dari interaksi pengguna di frontend hingga pemrosesan oleh Gemini AI dan penyimpanan database:
 
-Pastikan Node.js 20+ sudah terpasang.
+```mermaid
+graph TB
+    subgraph "👤 User Interface (Next.js 15 + React 19)"
+        UI1["🛡️ Halaman Utama<br/>(Cek Pesan Teks & Link)"]
+        UI2["📸 Analisis Multi-modal<br/>(Upload Screenshot Chat)"]
+        UI3["📊 Dashboard User<br/>(Riwayat Scan & Statistik)"]
+        UI4["📩 Laporan & Kontak"]
+    end
 
-1. Clone repository dan masuk ke folder proyek.
+    subgraph "⚙️ API Security & Gateway (Express + Node.js)"
+        Sec1["🚦 Rate Limiter<br/>(Perlindungan dari Abuse)"]
+        Sec2["🛡️ Helmet & Secure CORS"]
+        Sec3["🔐 Google OAuth2 / JWT Auth"]
+        Controller["🎮 Controllers<br/>(Auth, Scans, Analysis, Contacts)"]
+    end
 
+    subgraph "🧠 AI Analysis Engine (Google Gemini)"
+        Gemini["✨ Gemini 2.5 Flash Model"]
+        Prompt["📝 Security Expert System Prompt"]
+        ImageProc["🖼️ Base64 Image Parser"]
+    end
+
+    subgraph "💾 Database & Storage Layer"
+        Prisma["Prisma Client ORM"]
+        DB[("⚡ Supabase PostgreSQL Database")]
+    end
+
+    subgraph "🚀 Cloud Deployment Platform"
+        GCP_FE["🌐 Google Cloud Run (Frontend Service)"]
+        GCP_BE["🔗 Google Cloud Run (Backend Service)"]
+    end
+
+    UI1 --> GCP_FE
+    UI2 --> GCP_FE
+    UI3 --> GCP_FE
+    UI4 --> GCP_FE
+
+    GCP_FE -->|HTTPS Request + Bearer JWT| GCP_BE
+    GCP_BE --> Sec1
+    Sec1 --> Sec2
+    Sec2 --> Sec3
+    Sec3 --> Controller
+
+    Controller -->|1. Kirim Teks / Image Part| Gemini
+    Gemini -->|2. Respon JSON Terstruktur| Controller
+    Controller -->|3. Simpan Riwayat| Prisma
+    Prisma --> DB
+
+    style UI1 fill:#1E293B,stroke:#3B82F6,stroke-width:2px,color:#fff
+    style UI2 fill:#1E293B,stroke:#3B82F6,stroke-width:2px,color:#fff
+    style UI3 fill:#1E293B,stroke:#3B82F6,stroke-width:2px,color:#fff
+    style Controller fill:#1E293B,stroke:#10B981,stroke-width:2px,color:#fff
+    style Gemini fill:#1E293B,stroke:#8B5CF6,stroke-width:2px,color:#fff
+    style DB fill:#1E293B,stroke:#3FCF8E,stroke-width:2px,color:#fff
+    style GCP_FE fill:#0F172A,stroke:#F59E0B,stroke-width:2px,color:#fff
+    style GCP_BE fill:#0F172A,stroke:#F59E0B,stroke-width:2px,color:#fff
+```
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
+
+## 🧪 Core AI Logic: Analisis Multi-modal Gemini
+
+Sistem memanfaatkan SDK `@google/genai` terbaru untuk memproses masukan multi-modal (teks & gambar) dengan prompt sistem yang mendalam untuk mendeteksi penipuan:
+
+```typescript
+// Implementasi Inti pada Backend Express (backend/src/services/gemini.service.ts)
+const prompt = `
+  Anda adalah analis keamanan siber profesional untuk mendeteksi penipuan digital (scam, phishing, social engineering).
+  Analisis input berikut yang diterima oleh pengguna Indonesia.
+  Jika ada screenshot, baca semua teks yang terlihat di gambar, perhatikan URL, nomor pengirim, nama aplikasi, nominal uang, instruksi transfer, OTP, file APK, dan indikator social engineering.
+  
+  Teks tambahan dari pengguna:
+  "${text || "Tidak ada teks tambahan. Analisis berdasarkan screenshot yang dilampirkan."}"
+  
+  Berikan hasil analisis dalam format JSON murni tanpa markdown, dengan struktur berikut:
+  {
+    "score": number (skor risiko 0 - 100, di mana 0 sangat aman dan 100 sangat berbahaya),
+    "riskLevel": "safe" | "medium" | "high" (safe jika score < 30, medium jika 30-69, high jika >= 70),
+    "category": string (kategori penipuan, contoh: "Phishing Link", "Modus Kurir Paket", "Penipuan Hadiah", "SMS Spam", "Aman / Normal"),
+    "summary": string (ringkasan penjelasan risiko dalam Bahasa Indonesia yang ramah keluarga/mudah dipahami orang tua),
+    "redFlags": [
+      {
+        "indicator": string (ciri mencurigakan, contoh: "Menggunakan nomor HP tidak dikenal"),
+        "explanation": string (penjelasan rinci mengapa hal ini mencurigakan),
+        "severity": "high" | "medium" | "low"
+      }
+    ],
+    "recommendations": [
+      string (rekomendasi tindakan praktis, contoh: "Jangan klik link tersebut", "Hubungi call center resmi bank Anda")
+    ]
+  }
+`;
+```
+
+---
+
+## 📂 Struktur Direktori Proyek
+
+Monorepo ini dikelola secara rapi dengan pembagian fungsionalitas yang terisolasi dengan baik:
+
+```text
+aman-klik/
+├── frontend/              # Web Client (Next.js 15)
+│   ├── src/app/           # App Router Layouts, Metadata, & Pages
+│   ├── src/components/    # Komponen UI (Dashboard, Auth, Scan Section)
+│   └── src/lib/           # Client API Context & Google Auth Manager
+├── backend/               # REST API Server (Express + TypeScript)
+│   ├── prisma/            # Skema Database PostgreSQL (Supabase)
+│   └── src/
+│       ├── controllers/   # Penanganan Logika Route (Scan, Auth, User Stats)
+│       ├── database/      # Prisma Client & Sinkronisasi DB Repository
+│       ├── middlewares/   # Auth Guard, CORS Secure, IP Rate Limiter, Error Handler
+│       ├── routes/        # Router Endpoint Mapping
+│       └── services/      # Integrasi Gemini AI Engine
+└── README.md
+```
+
+---
+
+## 📋 Endpoint API Utama
+
+Berikut adalah daftar endpoint REST API backend yang aktif beserta status autentikasinya:
+
+| Method | Endpoint | Autentikasi | Deskripsi / Fungsi Utama |
+|:---:|---|:---:|---|
+| `GET` | `/api/v1/health` | **Public** | Memeriksa status kesehatan server backend |
+| `POST` | `/api/v1/auth/google` | **Public** | Registrasi/Login menggunakan Google ID Token & mengembalikan token JWT |
+| `GET` | `/api/v1/auth/profile` | **Required** | Mengambil informasi detail profil user yang sedang masuk |
+| `POST` | `/api/v1/analysis/scan` | **Optional** | Mengirimkan data scan (teks/gambar) ke Gemini AI dan menyimpan riwayat |
+| `GET` | `/api/v1/scans` | **Required** | Mengambil seluruh riwayat pemindaian user (support filter & pagination) |
+| `GET` | `/api/v1/scans/stats` | **Required** | Mengambil data statistik scan user (visual grafik dashboard) |
+| `DELETE` | `/api/v1/scans/:id` | **Required** | Menghapus log riwayat pemindaian tertentu milik user |
+| `POST` | `/api/v1/contact` | **Optional** | Mengirimkan pesan/pertanyaan atau laporan aduan penipuan baru |
+
+<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
+
+## ⚙️ Cara Menjalankan Aplikasi Secara Lokal
+
+### Prasyarat Sebelum Instalasi
+- [Node.js](https://nodejs.org/) versi 20 atau yang lebih baru.
+- Akun [Supabase](https://supabase.com/) & Database PostgreSQL aktif.
+- API Key dari [Google AI Studio](https://aistudio.google.com/).
+- Google Client ID dari Google Cloud Console.
+
+### 1. Kloning Repository
 ```bash
 git clone <repository-url>
 cd aman-klik
 ```
 
-2. Setup backend.
+### 2. Konfigurasi & Jalankan Backend
+1. Masuk ke folder backend:
+   ```bash
+   cd backend
+   npm install
+   ```
+2. Salin template `.env` dan lengkapi nilainya:
+   ```bash
+   cp .env.example .env
+   ```
+   *Isi dengan `DATABASE_URL` (Supabase), `GEMINI_API_KEY`, `JWT_SECRET`, dan `GOOGLE_CLIENT_ID`.*
+3. Buat prisma client dan sinkronisasikan database:
+   ```bash
+   npm run db:generate
+   ```
+4. Jalankan mode pengembangan:
+   ```bash
+   npm run dev
+   ```
+   *Backend akan berjalan di: `http://localhost:5000`*
+
+### 3. Konfigurasi & Jalankan Frontend
+1. Buka terminal baru dan masuk ke folder frontend:
+   ```bash
+   cd ../frontend
+   npm install
+   ```
+2. Salin template `.env.local` dan lengkapi nilainya:
+   ```bash
+   cp .env.example .env.local
+   ```
+   *Isi dengan `NEXT_PUBLIC_GOOGLE_CLIENT_ID` dan `NEXT_PUBLIC_API_URL` (`http://localhost:5000/api/v1`).*
+3. Jalankan mode pengembangan:
+   ```bash
+   npm run dev
+   ```
+   *Frontend Next.js akan berjalan di: `http://localhost:3000`*
+
+---
+
+## 🚀 Panduan Deployment Ke Production
+
+### 1. Deployment Backend ke Google Cloud Run
+Pastikan Docker terinstal jika ingin melakukan build kontainer secara lokal atau gunakan Google Cloud Build:
+1. Deploy service backend:
+   ```bash
+   gcloud run deploy amanklik-backend \
+     --source . \
+     --platform managed \
+     --region asia-southeast1 \
+     --allow-unauthenticated
+   ```
+2. Atur environment variables pada instansi Cloud Run:
+   - `PORT`: `5000`
+   - `NODE_ENV`: `production`
+   - `DATABASE_URL`: `postgresql://...`
+   - `GEMINI_API_KEY`: `AIzaSy...`
+   - `JWT_SECRET`: `rahasia_jwt_anda`
+   - `GOOGLE_CLIENT_ID`: `...apps.googleusercontent.com`
+   - `CORS_ORIGIN`: `https://amanklik-575126371408.asia-southeast1.run.app` (domain frontend Anda)
+
+### 2. Deployment Frontend ke Google Cloud Run / Vercel
+Jika menggunakan Google Cloud Run dengan Dockerfile:
+```bash
+gcloud run deploy amanklik-frontend \
+  --source . \
+  --platform managed \
+  --region asia-southeast1 \
+  --allow-unauthenticated \
+  --set-build-env-vars NEXT_PUBLIC_API_URL=https://amanklik-backend-575126371408.asia-southeast1.run.app/api/v1,NEXT_PUBLIC_GOOGLE_CLIENT_ID=575126371408-24cf56dvn0m8gih1ieip7shrk3s2so17.apps.googleusercontent.com
+```
+
+### 3. Integrasi OAuth Google Console
+Pastikan untuk mendaftarkan URL production frontend ke **Google Cloud Console Credentials OAuth 2.0**:
+- **Authorized JavaScript Origins:** `https://amanklik-575126371408.asia-southeast1.run.app`
+- **Authorized Redirect URIs:** `https://amanklik-575126371408.asia-southeast1.run.app`
+
+---
+
+## 🧪 Validasi Keamanan & Kompilasi
+Untuk memverifikasi kualitas kode backend dan frontend sebelum diproduksi, jalankan pemeriksaan tipe TypeScript dan proses build:
 
 ```bash
-cd backend
-npm install
-cp .env.example .env
-npm run db:generate
-npm run dev
-```
-
-Isi `backend/.env` dengan `DATABASE_URL`, `GEMINI_API_KEY`, `JWT_SECRET`, dan `GOOGLE_CLIENT_ID`.
-
-3. Setup frontend di terminal lain.
-
-```bash
-cd frontend
-npm install
-cp .env.example .env.local
-npm run dev
-```
-
-Isi `frontend/.env.local` dengan `NEXT_PUBLIC_GOOGLE_CLIENT_ID` dan `NEXT_PUBLIC_API_URL`.
-
-4. Buka aplikasi.
-
-```text
-Frontend: http://localhost:3000
-Backend:  http://localhost:5000/api/v1/health
-```
-
-## Struktur Proyek
-
-```text
-aman-klik/
-├── frontend/              # Next.js app
-│   ├── src/app/           # App Router pages, layouts, metadata
-│   ├── src/components/    # UI sections, layout, effects, pages
-│   └── src/lib/           # API client dan auth context
-├── backend/               # Express API
-│   ├── prisma/            # Prisma schema
-│   └── src/
-│       ├── controllers/   # Auth, analysis, scans, contact
-│       ├── database/      # Prisma client dan repositories
-│       ├── middlewares/   # Auth, CORS, rate limiter, error handler
-│       ├── routes/        # API routes
-│       └── services/      # Gemini AI service
-└── README.md
-```
-
-## API Endpoints
-
-| Method | Endpoint | Auth | Fungsi |
-|---|---|---|---|
-| `GET` | `/api/v1/health` | Public | Health check backend |
-| `POST` | `/api/v1/auth/google` | Public | Verifikasi Google ID token dan return JWT |
-| `GET` | `/api/v1/auth/profile` | Required | Ambil profil user aktif |
-| `POST` | `/api/v1/analysis/scan` | Optional | Analisis pesan dengan Gemini AI dan simpan hasil scan |
-| `GET` | `/api/v1/scans` | Required | Ambil riwayat scan user dengan pagination dan filter |
-| `GET` | `/api/v1/scans/stats` | Required | Ambil statistik scan user |
-| `DELETE` | `/api/v1/scans/:id` | Required | Hapus scan milik user |
-| `POST` | `/api/v1/contact` | Optional | Kirim pesan kontak atau laporan penipuan |
-
-## Deployment
-
-### Frontend ke Vercel
-
-1. Push repository ke GitHub.
-2. Import project di Vercel.
-3. Set Root Directory ke `frontend`.
-4. Build Command: `npm run build`.
-5. Tambahkan environment variables:
-
-```env
-NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
-NEXT_PUBLIC_API_URL=https://your-backend-url.run.app/api/v1
-```
-
-### Backend ke Cloud Run atau Railway
-
-1. Deploy folder `backend` menggunakan `backend/Dockerfile`.
-2. Tambahkan environment variables:
-
-```env
-PORT=5000
-NODE_ENV=production
-DATABASE_URL=your_supabase_postgresql_url
-GEMINI_API_KEY=your_gemini_api_key
-JWT_SECRET=your_secure_jwt_secret
-GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
-CORS_ORIGIN=https://your-frontend-domain.vercel.app
-```
-
-3. Jalankan Prisma generate dan push schema sesuai workflow platform:
-
-```bash
-npx prisma generate
-npx prisma db push
-```
-
-### Google Cloud Console
-
-Tambahkan domain production ke OAuth Client:
-
-```text
-Authorized JavaScript Origins:
-https://your-frontend-domain.vercel.app
-
-Authorized Redirect URIs:
-https://your-frontend-domain.vercel.app
-```
-
-## Verification
-
-```bash
+# Validasi Backend
 cd backend
 npx tsc --noEmit
 npm run build
 
+# Validasi Frontend
 cd ../frontend
 npx tsc --noEmit
 npm run build
 ```
 
-Docker backend:
+---
 
-```bash
-cd backend
-docker build -t amanklik-backend .
-```
+## 👥 Tim Pengembang
 
-## Tim
+- **Renoslendra** — Lead Creator & Developer AmanKlik AI.
+- Dikembangkan secara khusus untuk menyukseskan program literasi digital Indonesia di kompetisi **#JuaraVibeCoding2026**.
 
-Dibuat oleh Renoslendra untuk #JuaraVibeCoding2026.
+---
 
-## Lisensi
+## 📄 Lisensi
 
-MIT License.
+Proyek ini dilisensikan di bawah **MIT License** - lihat file [LICENSE](LICENSE) untuk detail lebih lanjut.
