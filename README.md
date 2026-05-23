@@ -14,7 +14,7 @@ AmanKlik AI adalah platform keamanan digital berbasis web yang membantu masyarak
 
 ## Demo
 
-Live demo: akan diisi setelah deployment Vercel selesai.
+Live demo: [https://amanklik-frontend-575126371408.asia-southeast1.run.app](https://amanklik-frontend-575126371408.asia-southeast1.run.app)
 
 Screenshot: gunakan halaman utama AmanKlik AI setelah deploy untuk menampilkan demo analisis pesan real-time.
 
@@ -41,7 +41,7 @@ AmanKlik AI membantu pengguna non-teknis membuat keputusan cepat: apakah pesan t
 | Database | Supabase PostgreSQL, Prisma ORM |
 | AI | Google Gemini 2.5 Flash via `@google/genai` |
 | Auth | Google OAuth2, JWT |
-| Deployment | Vercel untuk frontend, Cloud Run atau Railway untuk backend |
+| Deployment | Google Cloud Run (Frontend + Backend) |
 
 ## Cara Menjalankan Lokal
 
