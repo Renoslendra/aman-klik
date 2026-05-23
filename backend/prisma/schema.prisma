@@ -1,0 +1,141 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================
+// User — Akun pengguna yang login via Google OAuth
+// ============================================================
+model User {
+  id            String    @id @default(cuid())
+  googleId      String    @unique @map("google_id")
+  email         String    @unique
+  name          String
+  avatar        String?
+  role          Role      @default(USER)
+
+  // Relations
+  scans         Scan[]
+  reports       Report[]
+
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+// ============================================================
+// Scan — Setiap pemindaian pesan yang dilakukan pengguna
+// ============================================================
+model Scan {
+  id            String      @id @default(cuid())
+  userId        String?     @map("user_id")
+  inputText     String      @map("input_text") @db.Text
+  inputType     InputType   @default(TEXT) @map("input_type")
+  platform      Platform?
+
+  // Hasil analisis dari Gemini AI
+  score         Int         // 0–100
+  riskLevel     RiskLevel   @map("risk_level")
+  category      String      // contoh: "Phishing Link", "Modus Kurir APK"
+  summary       String      @db.Text
+  redFlags      Json        @default("[]") @map("red_flags")
+  recommendations Json      @default("[]")
+
+  // Metadata
+  modelUsed     String?     @map("model_used") // contoh: "gemini-2.5-flash"
+  responseTimeMs Int?       @map("response_time_ms")
+
+  // Relations
+  user          User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  reports       Report[]
+
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([riskLevel])
+  @@index([createdAt])
+  @@map("scans")
+}
+
+enum InputType {
+  TEXT
+  URL
+  IMAGE
+}
+
+enum Platform {
+  SMS
+  WHATSAPP
+  TELEGRAM
+  EMAIL
+  INSTAGRAM
+  FACEBOOK
+  OTHER
+}
+
+enum RiskLevel {
+  safe
+  medium
+  high
+}
+
+// ============================================================
+// Report — Laporan pengguna terhadap pesan yang mencurigakan
+// ============================================================
+model Report {
+  id            String        @id @default(cuid())
+  userId        String        @map("user_id")
+  scanId        String?       @map("scan_id")
+  reason        String        @db.Text
+  status        ReportStatus  @default(PENDING)
+
+  // Relations
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scan          Scan?         @relation(fields: [scanId], references: [id], onDelete: SetNull)
+
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([status])
+  @@map("reports")
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  DISMISSED
+}
+
+// ============================================================
+// ScamDatabase — Database pola penipuan yang diketahui (admin-managed)
+// ============================================================
+model ScamPattern {
+  id            String    @id @default(cuid())
+  pattern       String    @db.Text          // Regex atau kata kunci
+  patternType   String    @map("pattern_type") // "keyword", "regex", "url"
+  category      String                       // "phishing", "kurir_apk", "undian", dll
+  severity      String    @default("high")   // "low", "medium", "high"
+  description   String    @db.Text
+  isActive      Boolean   @default(true) @map("is_active")
+
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@index([category])
+  @@index([isActive])
+  @@map("scam_patterns")
+}
