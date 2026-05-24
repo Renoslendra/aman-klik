@@ -8,17 +8,33 @@ import config from "../config/env.js";
 import logger from "../utils/logger.js";
 import { AnalysisResponse, EmergencyDiagnosisResponse } from "../types/index.js";
 
-// Initialize Gemini AI Client if API key is provided
-let aiClient: GoogleGenAI | null = null;
+// Initialize separate Gemini AI Clients for each feature to split quota
+let emergencyClient: GoogleGenAI | null = null;
+let analysisClient: GoogleGenAI | null = null;
+
+// Client 1: Emergency Diagnosis (AI Cyber Medic)
 if (config.GEMINI_API_KEY) {
   try {
-    aiClient = new GoogleGenAI({ apiKey: config.GEMINI_API_KEY });
-    logger.info("Gemini AI Client initialized successfully.");
+    emergencyClient = new GoogleGenAI({ apiKey: config.GEMINI_API_KEY });
+    logger.info("Gemini Emergency Client initialized successfully.");
   } catch (error) {
-    logger.error("Failed to initialize Gemini AI Client:", error);
+    logger.error("Failed to initialize Gemini Emergency Client:", error);
   }
 } else {
-  logger.warn("GEMINI_API_KEY is not set. Gemini Service will run in mock mode.");
+  logger.warn("GEMINI_API_KEY is not set. Emergency diagnosis will run in mock mode.");
+}
+
+// Client 2: Message Analysis (Cek Pesan / Analisis Risiko)
+const analysisApiKey = config.GEMINI_API_KEY_ANALYSIS || config.GEMINI_API_KEY;
+if (analysisApiKey) {
+  try {
+    analysisClient = new GoogleGenAI({ apiKey: analysisApiKey });
+    logger.info("Gemini Analysis Client initialized successfully.");
+  } catch (error) {
+    logger.error("Failed to initialize Gemini Analysis Client:", error);
+  }
+} else {
+  logger.warn("GEMINI_API_KEY_ANALYSIS is not set. Analysis will run in mock mode.");
 }
 
 type EmergencyAction = EmergencyDiagnosisResponse["actionPlan"][number]["action"];
@@ -98,38 +114,58 @@ export class GeminiService {
       }
     }
 
-    if (!aiClient) {
-      logger.info("GEMINI_API_KEY missing. Falling back to Mock Analysis Mode.");
+    if (!analysisClient) {
+      logger.info("GEMINI_API_KEY_ANALYSIS missing. Falling back to Mock Analysis Mode.");
       return this.getMockAnalysis(text || "[Screenshot tanpa teks tambahan]", hasImage);
     }
 
     try {
-      const prompt = `
-        Anda adalah analis keamanan siber profesional untuk mendeteksi penipuan digital (scam, phishing, social engineering).
-        Analisis input berikut yang diterima oleh pengguna Indonesia.
-        Jika ada screenshot, baca semua teks yang terlihat di gambar, perhatikan URL, nomor pengirim, nama aplikasi, nominal uang, instruksi transfer, OTP, file APK, dan indikator social engineering.
-        
-        Teks tambahan dari pengguna:
-        "${text || "Tidak ada teks tambahan. Analisis berdasarkan screenshot yang dilampirkan."}"
-        
-        Berikan hasil analisis dalam format JSON murni tanpa markdown, dengan struktur berikut:
-        {
-          "score": number (skor risiko 0 - 100, di mana 0 sangat aman dan 100 sangat berbahaya),
-          "riskLevel": "safe" | "medium" | "high" (safe jika score < 30, medium jika 30-69, high jika >= 70),
-          "category": string (kategori penipuan, contoh: "Phishing Link", "Modus Kurir Paket", "Penipuan Hadiah", "SMS Spam", "Aman / Normal"),
-          "summary": string (ringkasan penjelasan risiko dalam Bahasa Indonesia yang ramah keluarga/mudah dipahami orang tua),
-          "redFlags": [
-            {
-              "indicator": string (ciri mencurigakan, contoh: "Menggunakan nomor HP tidak dikenal"),
-              "explanation": string (penjelasan rinci mengapa hal ini mencurigakan),
-              "severity": "high" | "medium" | "low"
-            }
-          ],
-          "recommendations": [
-            string (rekomendasi tindakan praktis, contoh: "Jangan klik link tersebut", "Hubungi call center resmi bank Anda")
-          ]
-        }
-      `;
+      const prompt = `Anda adalah AHLI KEAMANAN SIBER Indonesia yang menganalisis pesan/screenshot untuk mendeteksi penipuan digital.
+
+===== ATURAN ANALISIS =====
+1. Baca SELURUH teks yang ada — dari input user maupun yang terlihat di screenshot.
+2. Perhatikan indikator penipuan: URL mencurigakan, nomor pengirim tidak resmi, permintaan OTP/PIN, file APK, instruksi transfer ke rekening pribadi, klaim hadiah, tekanan waktu ("harus hari ini"), dan tata bahasa buruk.
+3. Untuk pesan AMAN (chat biasa, notifikasi resmi, percakapan normal), beri skor RENDAH (0-20) dan riskLevel "safe".
+4. Untuk pesan MENCURIGAKAN tapi belum pasti, beri skor SEDANG (30-60) dan riskLevel "medium".
+5. Untuk pesan JELAS PENIPUAN (ada link phishing, minta transfer, minta OTP, file APK), beri skor TINGGI (70-100) dan riskLevel "high".
+6. DILARANG mengarang indikator yang tidak ada di pesan asli.
+7. DILARANG memberikan skor tinggi untuk pesan yang jelas aman/normal.
+8. WAJIB menggunakan Bahasa Indonesia yang ramah dan mudah dipahami orang awam.
+
+===== REFERENSI CIRI PENIPUAN =====
+- Link pendek (bit.ly, s.id, tinyurl) di pesan tak dikenal → TINGGI
+- Nomor HP biasa mengaku sebagai bank/instansi → TINGGI
+- Permintaan OTP, PIN, password → SANGAT TINGGI
+- File APK dari chat/SMS → SANGAT TINGGI
+- Klaim hadiah/undian tanpa ikut lomba → TINGGI
+- "Paket Anda tertahan, klik link" → TINGGI (modus kurir)
+- Notifikasi resmi dari app (Go-Jek, Tokopedia, dll) → AMAN
+- Chat biasa antar teman/keluarga → AMAN
+- Promosi dari akun bisnis terverifikasi → AMAN-SEDANG
+
+===== INPUT DARI PENGGUNA =====
+"""
+${text || "Tidak ada teks tambahan. Analisis berdasarkan screenshot yang dilampirkan."}
+"""
+
+===== FORMAT RESPON =====
+Berikan JSON murni tanpa markdown, tanpa komentar:
+{
+  "score": number (0-100),
+  "riskLevel": "safe" | "medium" | "high",
+  "category": string (contoh: "Phishing Link", "Modus Kurir Paket", "Penipuan Hadiah", "Social Engineering", "SMS Spam", "Aman / Pesan Normal"),
+  "summary": string (ringkasan 2-3 kalimat, jelaskan MENGAPA pesan ini aman/berbahaya berdasarkan fakta yang ada),
+  "redFlags": [
+    {
+      "indicator": string (ciri yang BENAR-BENAR ADA di pesan),
+      "explanation": string (mengapa ini mencurigakan),
+      "severity": "high" | "medium" | "low"
+    }
+  ],
+  "recommendations": [string (rekomendasi tindakan praktis)]
+}
+
+Jika pesan AMAN, redFlags boleh kosong [] dan recommendations berisi tips umum menjaga keamanan.`;
 
       const contents = input.image
         ? createUserContent([
@@ -138,24 +174,52 @@ export class GeminiService {
           ])
         : prompt;
 
-      const response = await aiClient.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents,
-        config: {
-          responseMimeType: "application/json",
-        },
-      });
+      // Retry logic for rate limit (429) errors
+      let lastError: unknown = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const response = await analysisClient.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents,
+            config: {
+              responseMimeType: "application/json",
+              temperature: 0.2,
+              topP: 0.85,
+              topK: 30,
+            },
+          });
 
-      const responseText = response.text;
-      if (!responseText) {
-        throw new Error("Menerima respon kosong dari Gemini API.");
+          const responseText = response.text;
+          if (!responseText) {
+            throw new Error("Menerima respon kosong dari Gemini API.");
+          }
+
+          const result: AnalysisResponse = JSON.parse(responseText);
+
+          // Validate riskLevel matches score
+          if (result.score < 30) result.riskLevel = "safe";
+          else if (result.score < 70) result.riskLevel = "medium";
+          else result.riskLevel = "high";
+
+          logger.info(`Message analyzed by Gemini. Risk score: ${result.score}, Level: ${result.riskLevel}`);
+          return result;
+        } catch (error: unknown) {
+          lastError = error;
+          const errorStr = error instanceof Error ? error.message : String(error);
+          if (errorStr.includes("429") || errorStr.includes("RESOURCE_EXHAUSTED") || errorStr.includes("quota")) {
+            const retryDelay = Math.min(5000 * Math.pow(2, attempt), 30000);
+            logger.warn(`Gemini Analysis rate limited (attempt ${attempt + 1}/3). Retrying in ${retryDelay / 1000}s...`);
+            await new Promise((resolve) => setTimeout(resolve, retryDelay));
+            continue;
+          }
+          break;
+        }
       }
 
-      const result: AnalysisResponse = JSON.parse(responseText);
-      logger.info(`Message analyzed by Gemini. Risk score: ${result.score}`);
-      return result;
+      logger.error("Error calling Gemini Analysis API (all retries exhausted):", lastError);
+      return this.getMockAnalysis(text || "[Screenshot tanpa teks tambahan]", hasImage);
     } catch (error) {
-      logger.error("Error calling Gemini API, falling back to mock analysis:", error);
+      logger.error("Error calling Gemini Analysis API, falling back to mock:", error);
       return this.getMockAnalysis(text || "[Screenshot tanpa teks tambahan]", hasImage);
     }
   }
@@ -167,7 +231,7 @@ export class GeminiService {
     description: string,
     category?: string
   ): Promise<EmergencyDiagnosisResponse> {
-    if (!aiClient) {
+    if (!emergencyClient) {
       logger.info("GEMINI_API_KEY missing. Falling back to Mock Emergency Diagnosis.");
       return this.getMockEmergencyDiagnosis(description, category);
     }
@@ -307,7 +371,7 @@ INGAT: Respon Anda HARUS akurat, spesifik sesuai deskripsi korban, dan tidak bol
       let lastError: unknown = null;
       for (let attempt = 0; attempt < 3; attempt++) {
         try {
-          const response = await aiClient.models.generateContent({
+          const response = await emergencyClient.models.generateContent({
             model: "gemini-2.5-flash",
             contents: prompt,
             config: {

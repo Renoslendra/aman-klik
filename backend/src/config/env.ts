@@ -9,6 +9,7 @@ interface EnvConfig {
   CORS_ORIGIN: string;
   DATABASE_URL: string;
   GEMINI_API_KEY: string;
+  GEMINI_API_KEY_ANALYSIS: string;
   JWT_SECRET: string;
   GOOGLE_CLIENT_ID: string;
 }
@@ -46,6 +47,7 @@ export const config: EnvConfig = {
   CORS_ORIGIN: corsOrigin,
   DATABASE_URL: getProductionRequiredEnv("DATABASE_URL"),
   GEMINI_API_KEY: getProductionRequiredEnv("GEMINI_API_KEY"),
+  GEMINI_API_KEY_ANALYSIS: getProductionRequiredEnv("GEMINI_API_KEY_ANALYSIS", process.env.GEMINI_API_KEY || ""),
   JWT_SECRET: getProductionRequiredEnv("JWT_SECRET", "amanklik-default-secret-2026-key-vibe"),
   GOOGLE_CLIENT_ID: getProductionRequiredEnv("GOOGLE_CLIENT_ID"),
 };
