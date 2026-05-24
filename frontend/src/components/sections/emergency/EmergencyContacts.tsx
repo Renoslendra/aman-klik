@@ -42,63 +42,18 @@ const categoryStyle: Record<ContactCategory, string> = {
 };
 
 const contactLogos: Record<string, React.ReactNode> = {
-  BRI: <img src="/images/logos/bri.svg" alt="BRI" className="h-full w-full object-contain" />,
-  BCA: <img src="/images/logos/bca.svg" alt="BCA" className="h-full w-full object-contain" />,
-  Mandiri: <img src="/images/logos/mandiri.svg" alt="Mandiri" className="h-full w-full object-contain" />,
-  BNI: <img src="/images/logos/bni.svg" alt="BNI" className="h-full w-full object-contain bg-white rounded p-0.5" />,
-  BSI: <img src="/images/logos/bsi.png" alt="BSI" className="h-full w-full object-contain" />,
-  DANA: <img src="/images/logos/dana.svg" alt="DANA" className="h-full w-full object-contain" />,
-  OVO: <img src="/images/logos/ovo.svg" alt="OVO" className="h-full w-full object-contain" />,
-  GoPay: <img src="/images/logos/gopay.svg" alt="GoPay" className="h-full w-full object-contain" />,
-  OJK: <img src="/images/logos/ojk.png" alt="OJK" className="h-full w-full object-contain" />,
-  "Patroli Siber": (
-    <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Dark Navy Shield Background */}
-      <path d="M 20 2 L 34 8 L 34 20 C 34 28 28 35 20 38 C 12 35 6 28 6 20 L 6 8 Z" fill="#0C1B33" stroke="#D4AF37" strokeWidth="1.5" />
-      {/* Inner gold border */}
-      <path d="M 20 4 L 32 9 L 32 20 C 32 27 27 33 20 36 C 13 33 8 27 8 20 L 8 9 Z" stroke="#D4AF37" strokeWidth="0.8" opacity="0.6" />
-      {/* 3 Gold Stars at the top */}
-      <polygon points="20,7 21,9 23,9 21.5,10.5 22,12.5 20,11 18,12.5 18.5,10.5 17,9 19,9" fill="#D4AF37" />
-      <polygon points="14,8 15,10 17,10 15.5,11.5 16,13.5 14,12 12,13.5 12.5,11.5 11,10 13,10" fill="#D4AF37" transform="scale(0.8) translate(3.5, 1.5)" />
-      <polygon points="26,8 27,10 29,10 27.5,11.5 28,13.5 26,12 24,13.5 24.5,11.5 23,10 25,10" fill="#D4AF37" transform="scale(0.8) translate(6.5, 1.5)" />
-      {/* Garuda wings shape in the center */}
-      <path d="M 12 18 C 16 16, 20 18, 20 18 C 20 18, 24 16, 28 18 C 26 22, 23 23, 20 23 C 17 23, 14 22, 12 18 Z" fill="#D4AF37" opacity="0.8" />
-      {/* Red shield in the center (Polri shield) */}
-      <path d="M 20 19 L 24 21 L 24 25 C 24 27 22 29 20 30 C 18 29 16 27 16 25 L 16 21 Z" fill="#C62828" stroke="#D4AF37" strokeWidth="0.8" />
-      {/* Gold scale/torch inside the red shield */}
-      <line x1="20" y1="21" x2="20" y2="28" stroke="#D4AF37" strokeWidth="1" />
-      <circle cx="20" cy="22" r="1.5" fill="#D4AF37" />
-    </svg>
-  ),
-  CekRekening: (
-    <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Red background circle */}
-      <circle cx="20" cy="20" r="18" fill="#E52D27" />
-      {/* Magnifying glass form of C */}
-      <path d="M 23 13 C 17 13 13 17 13 22 C 13 27 17 31 22 31 C 26 31 29 28 30 24" stroke="white" strokeWidth="3" strokeLinecap="round" />
-      {/* Magnifying glass handle */}
-      <path d="M 28 26 L 33 31" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
-      {/* Checkmark inside */}
-      <path d="M 17 21 L 20 24 L 25 18" stroke="#00E676" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  ),
-  "LAPOR!": (
-    <svg viewBox="0 0 120 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Red rounded rectangle */}
-      <rect width="120" height="40" rx="6" fill="#D22D30" />
-      {/* Green badge for SP4N */}
-      <rect x="6" y="8" width="32" height="24" rx="4" fill="#008A4E" />
-      <text x="22" y="22.5" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="9" fontWeight="800" fontFamily="system-ui, sans-serif">
-        SP4N
-      </text>
-      {/* LAPOR! text in bold white */}
-      <text x="76" y="22" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="15" fontWeight="900" fontFamily="system-ui, sans-serif" letterSpacing="0.5">
-        LAPOR!
-      </text>
-      {/* Stylized separator line */}
-      <path d="M 44 8 L 44 32" stroke="white" strokeWidth="1" opacity="0.3" />
-    </svg>
-  ),
+  BRI: <img src="/images/bank/BRI.svg" alt="BRI" className="h-full w-full object-contain" />,
+  BCA: <img src="/images/bank/BCA.svg" alt="BCA" className="h-full w-full object-contain" />,
+  Mandiri: <img src="/images/bank/Mandiri.svg" alt="Mandiri" className="h-full w-full object-contain" />,
+  BNI: <img src="/images/bank/BNI.svg" alt="BNI" className="h-full w-full object-contain bg-white rounded p-0.5" />,
+  BSI: <img src="/images/bank/BSI.svg" alt="BSI" className="h-full w-full object-contain" />,
+  DANA: <img src="/images/ewallet/DANA.svg" alt="DANA" className="h-full w-full object-contain" />,
+  OVO: <img src="/images/ewallet/OVO.svg" alt="OVO" className="h-full w-full object-contain" />,
+  GoPay: <img src="/images/ewallet/GoPay.svg" alt="GoPay" className="h-full w-full object-contain" />,
+  OJK: <img src="/images/pemerintah/OJK.svg" alt="OJK" className="h-full w-full object-contain" />,
+  "Patroli Siber": <img src="/images/pemerintah/Patroli_Siber.svg" alt="Patroli Siber" className="h-full w-full object-contain" />,
+  CekRekening: <img src="/images/pemerintah/CekRekening.svg" alt="CekRekening" className="h-full w-full object-contain" />,
+  "LAPOR!": <img src="/images/pemerintah/LAPOR.svg" alt="LAPOR!" className="h-full w-full object-contain" />,
 };
 
 function DirectoryIcon({ className }: { className?: string }) {

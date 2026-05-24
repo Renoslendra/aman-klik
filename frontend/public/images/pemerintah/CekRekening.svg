@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">CekRekening icon</title>
+  <desc id="desc">Ikon CekRekening yang ditracing dari logo pada screenshot pengguna karena aset SVG resmi tidak dapat diakses langsung.</desc>
+  <rect width="512" height="512" rx="112" fill="#F52D2E"/>
+  <g fill="#FFFFFF">
+    <path d="M256 142c-75 0-136 48-136 107s61 107 136 107c14 0 28-2 41-5l67 44c14 9 32-6 24-21l-31-58c22-18 35-41 35-67 0-59-61-107-136-107Zm0 42c52 0 94 29 94 65s-42 65-94 65-94-29-94-65 42-65 94-65Z"/>
+    <circle cx="312" cy="276" r="41" fill="#F52D2E"/>
+    <path d="M335 309 367 342" stroke="#FFFFFF" stroke-width="28" stroke-linecap="round"/>
+    <circle cx="311" cy="276" r="23"/>
+  </g>
+</svg>
