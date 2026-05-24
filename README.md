@@ -41,12 +41,23 @@ Dalam ajang **#JuaraVibeCoding2026**, sebuah aplikasi dinilai berdasarkan inovas
 
 | Pilar Penilaian | Kriteria Utama | Solusi & Inovasi AmanKlik AI |
 |---|---|---|
-| 🧠 **Pemanfaatan AI** | Apakah AI diimplementasikan secara efektif dan bukan gimik? | Menggunakan **Gemini 2.5 Flash** untuk analisis multi-modal (teks pesan & gambar screenshot). AI mengevaluasi indikator *social engineering*, link phishing, file berbahaya (.APK), dan memberikan skor risiko serta panduan mitigasi keamanan siber. |
+| 🧠 **Pemanfaatan AI** | Apakah AI diimplementasikan secara efektif dan bukan gimik? | Menggunakan **Gemini 2.5 Flash** untuk analisis multi-modal (teks pesan & gambar screenshot) serta fitur **AI Cyber Medic** untuk mendiagnosis situasi darurat pengguna pasca-insiden penipuan dengan panduan mitigasi interaktif. |
 | 📊 **Kualitas Arsitektur** | Keandalan, keamanan, dan skalabilitas monorepo. | Membagi sistem menjadi **Frontend Next.js (App Router)** & **Backend Express (TypeScript ESM)**. Dilengkapi dengan secure headers (Helmet), IP Rate Limiter, autentikasi aman Google OAuth2 + stateless JWT session, serta integrasi database Supabase PostgreSQL via Prisma ORM. |
 | 🎨 **UI/UX Premium** | Visual yang memukau dan pengalaman pengguna yang halus. | Menggunakan antarmuka bertema **Glassmorphism modern** dengan efek micro-interactions dinamis (Framer Motion), layout modern, dashboard statistik riwayat pemindaian yang interaktif, serta visual charting. |
-| 🇮🇩 **Dampak Nyata** | Relevansi sosial untuk publik lokal. | Menyelesaikan masalah darurat penipuan digital di Indonesia (modus paket kurir APK, pinjol ilegal, impersonasi bank, kupon hadiah palsu) dengan bahasa yang ramah keluarga dan mudah dipahami oleh segala kalangan usia. |
+| 🇮🇩 **Dampak Nyata** | Relevansi sosial untuk publik lokal. | Menyelesaikan masalah darurat penipuan digital di Indonesia (modus paket kurir APK, pinjol ilegal, impersonasi bank, kupon hadiah palsu) dengan bahasa yang ramah keluarga, serta melengkapinya dengan **Generator Surat Laporan** formal ke Bank/Polisi. |
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
+
+## 🚨 Fitur Unggulan Baru: Mode Darurat (Emergency Mode)
+
+Fitur ini dirancang khusus untuk membantu pengguna yang telah telanjur mengklik link phishing, mengunduh file APK berbahaya, atau mentransfer sejumlah uang kepada penipu. Fitur ini terdiri dari:
+
+1. **AI Cyber Medic**: Chatbot interaktif bertenaga Gemini AI yang berfungsi melakukan diagnosis cepat mengenai tingkat keparahan insiden keamanan siber yang dialami pengguna serta memberikan pertolongan pertama yang dipersonalisasi.
+2. **Generator Surat Laporan**: Alat untuk menghasilkan draf surat laporan formal secara otomatis (untuk Bank, Kepolisian, atau Kominfo/ADUANKONTEN) berdasarkan data insiden pengguna untuk mempercepat proses birokrasi penindakan hukum.
+3. **Panduan Interaktif Tindakan Cepat**: Langkah-langkah taktis terperinci berdasarkan skenario ancaman siber (seperti APK Terinstal, Akun Diambil Alih, Transfer Uang, Kebocoran Data).
+4. **Hub Kontak Darurat**: Daftar kontak resmi lembaga hukum dan pengaduan penipuan di Indonesia (OJK, Kominfo, Kepolisian, dll) yang dapat dihubungi secara langsung.
+
+---
 
 ## 🧬 Arsitektur Sistem Lengkap
 
@@ -59,6 +70,7 @@ graph TB
         UI2["📸 Analisis Multi-modal<br/>(Upload Screenshot Chat)"]
         UI3["📊 Dashboard User<br/>(Riwayat Scan & Statistik)"]
         UI4["📩 Laporan & Kontak"]
+        UI5["🚨 Mode Darurat<br/>(AI Cyber Medic, Report Generator, Interactive Guide)"]
     end
 
     subgraph "⚙️ API Security & Gateway (Express + Node.js)"
@@ -88,6 +100,7 @@ graph TB
     UI2 --> GCP_FE
     UI3 --> GCP_FE
     UI4 --> GCP_FE
+    UI5 --> GCP_FE
 
     GCP_FE -->|HTTPS Request + Bearer JWT| GCP_BE
     GCP_BE --> Sec1
@@ -157,15 +170,18 @@ aman-klik/
 ├── frontend/              # Web Client (Next.js 15)
 │   ├── src/app/           # App Router Layouts, Metadata, & Pages
 │   ├── src/components/    # Komponen UI (Dashboard, Auth, Scan Section)
+│   │   └── sections/
+│   │       └── emergency/ # Komponen Fitur Mode Darurat (Cyber Medic, Guide, Report Generator)
 │   └── src/lib/           # Client API Context & Google Auth Manager
 ├── backend/               # REST API Server (Express + TypeScript)
 │   ├── prisma/            # Skema Database PostgreSQL (Supabase)
 │   └── src/
-│       ├── controllers/   # Penanganan Logika Route (Scan, Auth, User Stats)
+│       ├── controllers/   # Penanganan Logika (Scan, Auth, Emergency Controller)
 │       ├── database/      # Prisma Client & Sinkronisasi DB Repository
 │       ├── middlewares/   # Auth Guard, CORS Secure, IP Rate Limiter, Error Handler
-│       ├── routes/        # Router Endpoint Mapping
+│       ├── routes/        # Router Endpoint (Scan, Auth, Emergency Routes)
 │       └── services/      # Integrasi Gemini AI Engine
+├── PANDUAN_DARURAT.md     # Panduan Tindakan Cepat Darurat Siber
 └── README.md
 ```
 
@@ -185,6 +201,7 @@ Berikut adalah daftar endpoint REST API backend yang aktif beserta status autent
 | `GET` | `/api/v1/scans/stats` | **Required** | Mengambil data statistik scan user (visual grafik dashboard) |
 | `DELETE` | `/api/v1/scans/:id` | **Required** | Menghapus log riwayat pemindaian tertentu milik user |
 | `POST` | `/api/v1/contact` | **Optional** | Mengirimkan pesan/pertanyaan atau laporan aduan penipuan baru |
+| `POST` | `/api/v1/emergency/diagnose` | **Optional** | Menganalisis kondisi darurat siber dan mendiagnosis langkah mitigasi AI |
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
 
