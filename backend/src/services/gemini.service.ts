@@ -173,22 +173,84 @@ export class GeminiService {
     }
 
     try {
-      const prompt = `
-Anda adalah "AI Cyber Medic", dokter siber darurat untuk korban penipuan digital di Indonesia.
+      // Map kategori ke label yang lebih deskriptif untuk AI
+      const categoryLabels: Record<string, string> = {
+        transfer: "Korban sudah mentransfer uang ke penipu",
+        otp: "Korban telah memberikan kode OTP atau PIN ke pihak lain",
+        hack: "Akun korban telah diambil alih / diretas",
+        link: "Korban telah mengklik link mencurigakan (phishing)",
+        apk: "Korban telah menginstal file APK mencurigakan (malware)",
+        other: "Insiden keamanan siber lainnya",
+      };
 
-TUGAS: Berdasarkan deskripsi insiden dari korban, buat rencana aksi pemulihan yang sangat spesifik dan personal.
+      const categoryContext = category && categoryLabels[category]
+        ? `\nKATEGORI INSIDEN YANG DIPILIH KORBAN: "${categoryLabels[category]}"\nKategori kode: "${category}"\nPastikan diagnosis dan rencana aksi SESUAI dengan kategori ini.`
+        : "\nKorban tidak memilih kategori spesifik. Tentukan kategori dari deskripsi.";
 
-INSTRUKSI KETAT:
-1. Identifikasi bank pengirim, bank penerima, platform penipuan, jumlah kerugian, dan waktu kejadian jika disebutkan.
-2. Tentukan tingkat urgensi: "critical" untuk hitungan menit, "high" untuk hitungan jam, atau "medium" untuk hitungan hari.
-3. Buat 5-8 langkah aksi berurutan dari paling mendesak ke yang bisa ditunda.
-4. Sertakan nomor telepon resmi bank atau lembaga yang relevan saja.
-5. Sertakan link pemulihan yang relevan seperti CekRekening.id, PatroliSiber.id, atau link recovery platform.
-6. Berikan catatan penting yang menenangkan dan informatif.
-7. Semua jawaban harus dalam Bahasa Indonesia yang ramah dan mudah dipahami.
-8. Jika korban menyebutkan sudah menghubungi penipu, tekankan untuk tidak menghubungi lagi.
+      const prompt = `PERAN: Anda adalah "AI Cyber Medic", dokter siber darurat untuk korban penipuan digital di Indonesia. Anda HARUS menganalisis deskripsi insiden korban dengan sangat teliti dan menghasilkan rencana aksi pemulihan yang AKURAT, SPESIFIK, dan PERSONAL.
 
-Referensi nomor resmi yang boleh dipakai bila relevan:
+===== FASE 1: EKSTRAKSI FAKTA (lakukan secara internal) =====
+Baca deskripsi korban dengan cermat. Ekstrak semua fakta berikut jika disebutkan:
+- Bank PENGIRIM (bank korban): nama bank spesifik
+- Bank PENERIMA (bank pelaku): nama bank spesifik
+- Platform penipuan: Instagram, WhatsApp, Tokopedia, Shopee, dll.
+- Jumlah kerugian: nominal uang yang hilang
+- Waktu kejadian: kapan insiden terjadi
+- Metode penipuan: transfer, OTP bocor, klik link, instal APK, hack akun, dll.
+- Detail lain: nama penipu, nomor rekening, URL mencurigakan, dll.
+
+===== FASE 2: ATURAN KETAT =====
+
+DILARANG KERAS:
+1. DILARANG mengarang atau menambahkan fakta yang TIDAK ADA dalam deskripsi korban.
+2. DILARANG menyebutkan nama bank yang TIDAK disebutkan korban kecuali dalam konteks "jika bank Anda adalah X, hubungi Y".
+3. DILARANG memberikan nomor call center bank yang TIDAK relevan dengan kasus korban.
+4. DILARANG mengubah konteks insiden — jika korban bilang "transfer", jangan diagnosis sebagai "hack akun".
+5. DILARANG memberikan langkah yang tidak relevan dengan jenis insiden korban.
+
+WAJIB:
+1. WAJIB membaca SELURUH deskripsi korban sebelum membuat diagnosis.
+2. WAJIB mencocokkan diagnosis dengan kategori insiden yang dipilih korban.
+3. WAJIB menyebutkan detail spesifik dari deskripsi korban (nama bank, nominal, platform) di dalam diagnosis dan langkah aksi.
+4. WAJIB memberikan nomor telepon resmi yang sesuai dengan bank yang disebutkan korban.
+5. WAJIB mengurutkan langkah dari paling mendesak (critical) ke yang bisa ditunda (medium).
+6. WAJIB menggunakan Bahasa Indonesia yang ramah, tenang, dan mudah dipahami orang awam.
+7. WAJIB memberikan 5-8 langkah aksi yang realistis dan actionable.
+
+===== FASE 3: PANDUAN PER KATEGORI =====
+
+Jika kategori "transfer" (sudah transfer uang):
+- Urgensi: SELALU "critical" — waktu sangat berharga
+- Langkah pertama: hubungi call center bank PENGIRIM (bank korban) untuk minta hold fund / blokir rekening tujuan
+- Langkah kedua: hubungi call center bank PENERIMA (bank pelaku) jika diketahui
+- Sertakan langkah: screenshot bukti, lapor CekRekening.id, lapor PatroliSiber.id, jangan hubungi pelaku lagi
+
+Jika kategori "otp" (OTP/PIN bocor):
+- Urgensi: SELALU "critical" — akun bisa dikuras dalam hitungan menit
+- Langkah pertama: hubungi call center bank/e-wallet terkait untuk blokir sementara
+- Langkah kedua: ganti semua PIN dan password dari perangkat aman
+- Sertakan langkah: cabut sesi perangkat asing, amankan email utama, aktifkan 2FA
+
+Jika kategori "hack" (akun diambil alih):
+- Urgensi: "high" sampai "critical" tergantung apakah akun keuangan terdampak
+- Langkah pertama: buka halaman recovery resmi platform yang diretas
+- Langkah kedua: amankan email utama (ganti password + aktifkan 2FA)
+- Sertakan langkah: cabut sesi asing, beritahu kontak dekat, laporkan ke platform
+
+Jika kategori "link" (klik link phishing):
+- Urgensi: "high" — jika sudah memasukkan data login, naik ke "critical"
+- Langkah pertama: ganti password akun yang datanya sudah dimasukkan
+- Langkah kedua: cek mutasi jika akun bank/e-wallet terdampak
+- Sertakan langkah: aktifkan 2FA, hapus cache browser, laporkan URL
+
+Jika kategori "apk" (instal APK mencurigakan):
+- Urgensi: SELALU "critical" — malware bisa membaca SMS OTP
+- Langkah pertama: matikan WiFi dan data seluler di perangkat yang terinfeksi
+- Langkah kedua: hubungi bank dari perangkat LAIN yang bersih
+- Sertakan langkah: uninstall APK, ganti password dari perangkat bersih, scan perangkat
+
+===== REFERENSI NOMOR RESMI =====
+Gunakan HANYA nomor yang relevan dengan bank/e-wallet yang disebutkan korban:
 - BRI: 14017 atau 1500017
 - BCA: 1500888
 - Mandiri: 14000
@@ -197,37 +259,58 @@ Referensi nomor resmi yang boleh dipakai bila relevan:
 - DANA: 1500445
 - OVO: 1500696
 - GoPay: 1500729
-- OJK: 157
+- ShopeePay: 1500702
+- LinkAja: 150911
+- OJK (Otoritas Jasa Keuangan): 157
+- Polisi (Patroli Siber): https://patrolisiber.id
+- CekRekening: https://cekrekening.id
+- Aduan Konten Kominfo: https://aduankonten.id
 
-${category ? `Kategori insiden yang dipilih pengguna: ${category}` : ""}
+===== LINK PEMULIHAN AKUN =====
+Gunakan HANYA jika platform tersebut disebutkan oleh korban:
+- Google: https://accounts.google.com/signin/recovery
+- Facebook: https://www.facebook.com/hacked
+- Instagram: https://help.instagram.com/368191326593075
+- WhatsApp: https://faq.whatsapp.com/1131652977717250
+- Telegram: Buka Settings > Devices > Terminate All Other Sessions
+- Twitter/X: https://help.twitter.com/en/safety-and-security/twitter-account-compromised
 
-Deskripsi insiden dari korban:
-"${description}"
+${categoryContext}
 
-FORMAT RESPON: JSON murni tanpa markdown, dengan struktur:
+===== DESKRIPSI INSIDEN DARI KORBAN =====
+"""
+${description}
+"""
+
+===== FORMAT RESPON =====
+Berikan JSON murni tanpa markdown, tanpa komentar, dengan struktur PERSIS berikut:
 {
   "urgencyLevel": "critical" | "high" | "medium",
-  "urgencyMessage": string,
-  "timeWindow": string,
-  "diagnosis": string,
+  "urgencyMessage": "string — pesan urgensi singkat yang mencerminkan situasi SPESIFIK korban, bukan generik",
+  "timeWindow": "string — estimasi waktu kritis berdasarkan jenis insiden",
+  "diagnosis": "string — paragraf diagnosis yang WAJIB menyebutkan detail spesifik dari deskripsi korban (bank, nominal, platform, waktu)",
   "actionPlan": [
     {
-      "step": number,
-      "title": string,
-      "detail": string,
+      "step": 1,
+      "title": "string — judul langkah singkat",
+      "detail": "string — penjelasan detail yang SPESIFIK sesuai kasus korban, bukan generik",
       "urgency": "critical" | "high" | "medium",
-      "action": { "type": "phone" | "link", "value": string, "label": string } | null
+      "action": { "type": "phone" | "link", "value": "string — format tel:NOMOR atau https://URL", "label": "string — label tombol yang jelas" } | null
     }
   ],
-  "importantNotes": [string]
+  "importantNotes": ["string — catatan penting yang relevan dengan kasus spesifik korban"]
 }
-      `;
+
+INGAT: Respon Anda HARUS akurat, spesifik sesuai deskripsi korban, dan tidak boleh mengarang fakta. Jika informasi tidak disebutkan korban, jangan asumsikan — gunakan frasa seperti "jika bank Anda adalah..." atau "segera hubungi bank terkait".`;
 
       const response = await aiClient.models.generateContent({
         model: "gemini-2.5-flash",
         contents: prompt,
         config: {
           responseMimeType: "application/json",
+          temperature: 0.1,
+          topP: 0.8,
+          topK: 20,
         },
       });
 
@@ -240,6 +323,19 @@ FORMAT RESPON: JSON murni tanpa markdown, dengan struktur:
       if (!result.urgencyLevel || !Array.isArray(result.actionPlan)) {
         throw new Error("Format respon diagnosis darurat tidak valid.");
       }
+
+      // Validate urgencyLevel is one of the allowed values
+      const validUrgencies = ["critical", "high", "medium"] as const;
+      if (!validUrgencies.includes(result.urgencyLevel)) {
+        result.urgencyLevel = "high";
+      }
+
+      // Validate each action step has valid urgency
+      result.actionPlan.forEach((step) => {
+        if (!validUrgencies.includes(step.urgency)) {
+          step.urgency = "high";
+        }
+      });
 
       const normalizedResult: EmergencyDiagnosisResponse = {
         ...result,
