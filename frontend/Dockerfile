@@ -9,16 +9,10 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm install
 
-# Copy source code
+# Copy source code (includes .env.production for build-time NEXT_PUBLIC_* vars)
 COPY . .
 
-# Set environment variables untuk build time
-ARG NEXT_PUBLIC_API_URL
-ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
-
-# Build Next.js
+# Build Next.js (reads .env.production automatically)
 RUN npm run build
 
 # ============================================================
