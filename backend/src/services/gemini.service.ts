@@ -6,7 +6,7 @@ import {
 } from "@google/genai";
 import config from "../config/env.js";
 import logger from "../utils/logger.js";
-import { AnalysisResponse } from "../types/index.js";
+import { AnalysisResponse, EmergencyDiagnosisResponse } from "../types/index.js";
 
 // Initialize Gemini AI Client if API key is provided
 let aiClient: GoogleGenAI | null = null;
@@ -19,6 +19,56 @@ if (config.GEMINI_API_KEY) {
   }
 } else {
   logger.warn("GEMINI_API_KEY is not set. Gemini Service will run in mock mode.");
+}
+
+type EmergencyAction = EmergencyDiagnosisResponse["actionPlan"][number]["action"];
+
+function normalizeEmergencyPhoneValue(value: string): string | null {
+  const rawValue = String(value || "").replace(/^tel:/i, "").trim();
+  const candidates = rawValue.match(/\+?\d[\d\s().-]*\d/g) || [rawValue];
+  const candidate =
+    candidates
+      .map((item) => item.trim().replace(/^\d+[.)]\s*/, ""))
+      .find((item) => item.replace(/\D/g, "").length >= 3) || rawValue;
+  const cleaned = candidate.replace(/[^\d+]/g, "");
+  const normalized = cleaned.startsWith("+") ? `+${cleaned.slice(1).replace(/\+/g, "")}` : cleaned.replace(/\+/g, "");
+
+  if (!normalized) {
+    return null;
+  }
+
+  return `tel:${normalized}`;
+}
+
+function normalizeEmergencyLinkValue(value: string): string | null {
+  const trimmedValue = String(value || "").trim();
+
+  if (!trimmedValue) {
+    return null;
+  }
+
+  if (/^https?:\/\//i.test(trimmedValue)) {
+    return trimmedValue;
+  }
+
+  return `https://${trimmedValue.replace(/^\/+/, "")}`;
+}
+
+function normalizeEmergencyAction(action: EmergencyAction): EmergencyAction {
+  if (!action) {
+    return null;
+  }
+
+  const value = action.type === "phone" ? normalizeEmergencyPhoneValue(action.value) : normalizeEmergencyLinkValue(action.value);
+
+  if (!value) {
+    return null;
+  }
+
+  return {
+    ...action,
+    value,
+  };
 }
 
 export class GeminiService {
@@ -108,6 +158,413 @@ export class GeminiService {
       logger.error("Error calling Gemini API, falling back to mock analysis:", error);
       return this.getMockAnalysis(text || "[Screenshot tanpa teks tambahan]", hasImage);
     }
+  }
+
+  /**
+   * Diagnoses an emergency cyber incident and generates a personalized recovery action plan.
+   */
+  public static async diagnoseEmergency(
+    description: string,
+    category?: string
+  ): Promise<EmergencyDiagnosisResponse> {
+    if (!aiClient) {
+      logger.info("GEMINI_API_KEY missing. Falling back to Mock Emergency Diagnosis.");
+      return this.getMockEmergencyDiagnosis(description, category);
+    }
+
+    try {
+      const prompt = `
+Anda adalah "AI Cyber Medic", dokter siber darurat untuk korban penipuan digital di Indonesia.
+
+TUGAS: Berdasarkan deskripsi insiden dari korban, buat rencana aksi pemulihan yang sangat spesifik dan personal.
+
+INSTRUKSI KETAT:
+1. Identifikasi bank pengirim, bank penerima, platform penipuan, jumlah kerugian, dan waktu kejadian jika disebutkan.
+2. Tentukan tingkat urgensi: "critical" untuk hitungan menit, "high" untuk hitungan jam, atau "medium" untuk hitungan hari.
+3. Buat 5-8 langkah aksi berurutan dari paling mendesak ke yang bisa ditunda.
+4. Sertakan nomor telepon resmi bank atau lembaga yang relevan saja.
+5. Sertakan link pemulihan yang relevan seperti CekRekening.id, PatroliSiber.id, atau link recovery platform.
+6. Berikan catatan penting yang menenangkan dan informatif.
+7. Semua jawaban harus dalam Bahasa Indonesia yang ramah dan mudah dipahami.
+8. Jika korban menyebutkan sudah menghubungi penipu, tekankan untuk tidak menghubungi lagi.
+
+Referensi nomor resmi yang boleh dipakai bila relevan:
+- BRI: 14017 atau 1500017
+- BCA: 1500888
+- Mandiri: 14000
+- BNI: 1500046
+- BSI: 14040
+- DANA: 1500445
+- OVO: 1500696
+- GoPay: 1500729
+- OJK: 157
+
+${category ? `Kategori insiden yang dipilih pengguna: ${category}` : ""}
+
+Deskripsi insiden dari korban:
+"${description}"
+
+FORMAT RESPON: JSON murni tanpa markdown, dengan struktur:
+{
+  "urgencyLevel": "critical" | "high" | "medium",
+  "urgencyMessage": string,
+  "timeWindow": string,
+  "diagnosis": string,
+  "actionPlan": [
+    {
+      "step": number,
+      "title": string,
+      "detail": string,
+      "urgency": "critical" | "high" | "medium",
+      "action": { "type": "phone" | "link", "value": string, "label": string } | null
+    }
+  ],
+  "importantNotes": [string]
+}
+      `;
+
+      const response = await aiClient.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+        },
+      });
+
+      const responseText = response.text;
+      if (!responseText) {
+        throw new Error("Menerima respon kosong dari Gemini API.");
+      }
+
+      const result: EmergencyDiagnosisResponse = JSON.parse(responseText);
+      if (!result.urgencyLevel || !Array.isArray(result.actionPlan)) {
+        throw new Error("Format respon diagnosis darurat tidak valid.");
+      }
+
+      const normalizedResult: EmergencyDiagnosisResponse = {
+        ...result,
+        actionPlan: result.actionPlan.map((step) => ({
+          ...step,
+          action: normalizeEmergencyAction(step.action),
+        })),
+        importantNotes: Array.isArray(result.importantNotes) ? result.importantNotes : [],
+      };
+
+      logger.info(`Emergency diagnosed by Gemini. Urgency: ${normalizedResult.urgencyLevel}`);
+      return normalizedResult;
+    } catch (error) {
+      logger.error("Error calling Gemini for emergency diagnosis:", error);
+      return this.getMockEmergencyDiagnosis(description, category);
+    }
+  }
+
+  /**
+   * Mock emergency diagnosis for development without an API key.
+   */
+  private static getMockEmergencyDiagnosis(
+    description: string,
+    category?: string
+  ): EmergencyDiagnosisResponse {
+    const descLower = description.toLowerCase();
+    const isTransfer =
+      category === "transfer" ||
+      descLower.includes("transfer") ||
+      descLower.includes("kirim uang") ||
+      descLower.includes("rekening");
+    const isOtp =
+      category === "otp" ||
+      descLower.includes("otp") ||
+      descLower.includes("kode verifikasi") ||
+      descLower.includes("pin");
+    const isHack =
+      category === "hack" ||
+      descLower.includes("hack") ||
+      descLower.includes("diambil alih") ||
+      descLower.includes("diretas");
+    const isApk =
+      category === "apk" ||
+      descLower.includes("apk") ||
+      descLower.includes("aplikasi") ||
+      descLower.includes("kurir");
+
+    if (isTransfer) {
+      return {
+        urgencyLevel: "critical",
+        urgencyMessage: "KRITIS - Segera hubungi bank pengirim dan bank penerima.",
+        timeWindow: "15-60 menit pertama adalah waktu paling penting",
+        diagnosis:
+          "Anda kemungkinan menjadi korban penipuan transfer dana. Fokus utama saat ini adalah meminta bank menandai atau membekukan rekening tujuan sebelum dana ditarik pelaku.",
+        actionPlan: [
+          {
+            step: 1,
+            title: "Telepon call center bank pengirim",
+            detail:
+              "Sampaikan bahwa Anda korban penipuan online, baru melakukan transfer, dan minta bantuan blokir atau hold fund rekening tujuan. Catat nomor tiket laporan.",
+            urgency: "critical",
+            action: { type: "phone", value: "tel:1500888", label: "Hubungi BCA 1500888" },
+          },
+          {
+            step: 2,
+            title: "Telepon bank penerima jika diketahui",
+            detail:
+              "Jika rekening tujuan berada di BRI, Mandiri, BNI, BSI, atau bank lain, hubungi call center bank tersebut juga untuk mempercepat pelaporan rekening tujuan.",
+            urgency: "critical",
+            action: { type: "phone", value: "tel:14017", label: "Hubungi BRI 14017" },
+          },
+          {
+            step: 3,
+            title: "Screenshot seluruh bukti",
+            detail:
+              "Simpan bukti transfer, chat, profil akun pelaku, nomor rekening, nama pemilik rekening, iklan, dan link transaksi.",
+            urgency: "critical",
+            action: null,
+          },
+          {
+            step: 4,
+            title: "Laporkan rekening ke CekRekening",
+            detail:
+              "Masukkan rekening atau e-wallet pelaku agar tercatat di portal pelaporan rekening terindikasi tindak pidana.",
+            urgency: "high",
+            action: { type: "link", value: "https://cekrekening.id", label: "Buka CekRekening.id" },
+          },
+          {
+            step: 5,
+            title: "Buat laporan ke Patroli Siber",
+            detail:
+              "Unggah bukti yang sudah dikumpulkan melalui kanal pengaduan siber resmi.",
+            urgency: "high",
+            action: { type: "link", value: "https://patrolisiber.id", label: "Buka PatroliSiber.id" },
+          },
+          {
+            step: 6,
+            title: "Jangan hubungi pelaku lagi",
+            detail:
+              "Komunikasi lanjutan dapat membuka ruang penipuan berlapis. Setelah bukti lengkap, blokir akun atau nomor pelaku.",
+            urgency: "medium",
+            action: null,
+          },
+        ],
+        importantNotes: [
+          "Dana masih mungkin diselamatkan jika laporan masuk sangat cepat dan saldo belum ditarik pelaku.",
+          "Bank tidak akan meminta OTP, PIN, password, atau CVV saat menerima laporan.",
+          "Gunakan generator surat kronologis di halaman darurat untuk menyiapkan dokumen bank dan polisi.",
+        ],
+      };
+    }
+
+    if (isOtp) {
+      return {
+        urgencyLevel: "critical",
+        urgencyMessage: "KRITIS - OTP atau PIN bocor, amankan akun sekarang.",
+        timeWindow: "Tindakan perlu dilakukan dalam hitungan menit",
+        diagnosis:
+          "Kode OTP atau PIN yang sudah diberikan ke pihak lain dapat dipakai untuk mengambil alih transaksi. Perlakukan akun bank, e-wallet, dan email yang terhubung sebagai berisiko.",
+        actionPlan: [
+          {
+            step: 1,
+            title: "Hubungi bank atau e-wallet terkait",
+            detail:
+              "Minta blokir sementara transaksi dan jelaskan bahwa OTP atau PIN sudah diketahui pihak lain.",
+            urgency: "critical",
+            action: { type: "phone", value: "tel:14000", label: "Hubungi Mandiri 14000" },
+          },
+          {
+            step: 2,
+            title: "Ganti PIN dan password",
+            detail:
+              "Lakukan dari perangkat aman. Jika tidak bisa login, minta pemulihan resmi melalui call center atau cabang.",
+            urgency: "critical",
+            action: null,
+          },
+          {
+            step: 3,
+            title: "Cabut semua sesi perangkat asing",
+            detail:
+              "Periksa daftar perangkat login pada mobile banking, email, marketplace, dan media sosial.",
+            urgency: "high",
+            action: null,
+          },
+          {
+            step: 4,
+            title: "Amankan email utama",
+            detail:
+              "Ganti password email dan aktifkan 2FA karena email sering dipakai untuk reset akun keuangan.",
+            urgency: "high",
+            action: null,
+          },
+          {
+            step: 5,
+            title: "Pantau mutasi transaksi",
+            detail:
+              "Simpan screenshot transaksi mencurigakan dan segera laporkan jika ada dana keluar.",
+            urgency: "medium",
+            action: null,
+          },
+        ],
+        importantNotes: [
+          "Jangan beri OTP atau PIN kepada siapa pun, termasuk yang mengaku petugas bank atau polisi.",
+          "Jika transaksi sudah terjadi, segera ikuti jalur laporan transfer dana.",
+        ],
+      };
+    }
+
+    if (isHack) {
+      return {
+        urgencyLevel: "high",
+        urgencyMessage: "TINGGI - Mulai pemulihan akun dari kanal resmi.",
+        timeWindow: "Kerjakan pemulihan hari ini dan amankan email utama",
+        diagnosis:
+          "Akun Anda terindikasi diambil alih atau disalahgunakan. Prioritasnya adalah menguasai kembali email atau nomor pemulihan, lalu mencabut sesi pelaku.",
+        actionPlan: [
+          {
+            step: 1,
+            title: "Buka halaman pemulihan resmi",
+            detail:
+              "Gunakan recovery resmi platform. Jangan memakai jasa pemulihan akun dari DM atau iklan.",
+            urgency: "critical",
+            action: { type: "link", value: "https://accounts.google.com/signin/recovery", label: "Google Recovery" },
+          },
+          {
+            step: 2,
+            title: "Ganti password email utama",
+            detail:
+              "Email adalah pusat pemulihan akun. Ganti password, aktifkan 2FA, dan periksa perangkat login.",
+            urgency: "critical",
+            action: null,
+          },
+          {
+            step: 3,
+            title: "Cabut sesi perangkat asing",
+            detail:
+              "Logout dari perangkat tidak dikenal dan hapus aplikasi pihak ketiga mencurigakan.",
+            urgency: "high",
+            action: null,
+          },
+          {
+            step: 4,
+            title: "Beri tahu kontak dekat",
+            detail:
+              "Kabari keluarga atau teman bahwa akun sempat diretas agar mereka tidak menuruti permintaan uang atau OTP.",
+            urgency: "high",
+            action: null,
+          },
+          {
+            step: 5,
+            title: "Laporkan aktivitas pelaku",
+            detail:
+              "Gunakan fitur report di platform dan simpan bukti postingan, chat, atau perubahan email.",
+            urgency: "medium",
+            action: null,
+          },
+        ],
+        importantNotes: [
+          "Sebagian besar akun masih bisa dipulihkan jika email atau nomor HP utama masih Anda kuasai.",
+          "Setelah akun pulih, aktifkan 2FA dengan aplikasi authenticator bila tersedia.",
+        ],
+      };
+    }
+
+    if (isApk) {
+      return {
+        urgencyLevel: "critical",
+        urgencyMessage: "KRITIS - APK mencurigakan bisa membaca SMS dan OTP.",
+        timeWindow: "Putuskan koneksi dan amankan akun dalam 15 menit",
+        diagnosis:
+          "File APK dari chat atau pesan kurir palsu berisiko memasang malware. Prioritasnya adalah menghentikan akses perangkat dan mengamankan akun keuangan dari perangkat lain.",
+        actionPlan: [
+          {
+            step: 1,
+            title: "Putuskan koneksi perangkat",
+            detail:
+              "Matikan WiFi dan data seluler pada perangkat yang memasang APK agar aplikasi tidak terus mengirim data.",
+            urgency: "critical",
+            action: null,
+          },
+          {
+            step: 2,
+            title: "Hubungi bank dari perangkat lain",
+            detail:
+              "Minta blokir sementara transaksi jika perangkat yang terinfeksi memiliki mobile banking atau SMS OTP.",
+            urgency: "critical",
+            action: { type: "phone", value: "tel:1500046", label: "Hubungi BNI 1500046" },
+          },
+          {
+            step: 3,
+            title: "Uninstall APK mencurigakan",
+            detail:
+              "Hapus aplikasi yang baru dipasang. Jika tidak bisa dihapus, masuk Safe Mode atau minta bantuan service center resmi.",
+            urgency: "high",
+            action: null,
+          },
+          {
+            step: 4,
+            title: "Ganti password akun penting",
+            detail:
+              "Gunakan perangkat bersih untuk mengganti password email, bank, e-wallet, dan marketplace.",
+            urgency: "high",
+            action: null,
+          },
+          {
+            step: 5,
+            title: "Scan perangkat",
+            detail:
+              "Jalankan Google Play Protect atau pemindai keamanan terpercaya dan pantau mutasi rekening.",
+            urgency: "medium",
+            action: null,
+          },
+        ],
+        importantNotes: [
+          "Jangan instal file APK dari WhatsApp, SMS, atau link pendek.",
+          "Jika ada transaksi keluar, segera ikuti alur laporan transfer dana.",
+        ],
+      };
+    }
+
+    return {
+      urgencyLevel: "high",
+      urgencyMessage: "TINGGI - Segera ambil langkah pengamanan dasar.",
+      timeWindow: "Selesaikan tindakan utama hari ini",
+      diagnosis:
+        "Insiden keamanan digital terdeteksi. Karena detail belum cukup spesifik, mulai dari pengamanan akun utama, pengumpulan bukti, dan pelaporan resmi bila ada kerugian.",
+      actionPlan: [
+        {
+          step: 1,
+          title: "Amankan email dan akun keuangan",
+          detail:
+            "Ganti password dari perangkat aman dan aktifkan 2FA pada email, bank, e-wallet, dan marketplace.",
+          urgency: "critical",
+          action: null,
+        },
+        {
+          step: 2,
+          title: "Kumpulkan bukti",
+          detail:
+            "Screenshot chat, nomor, link, bukti transaksi, profil akun, dan waktu kejadian.",
+          urgency: "high",
+          action: null,
+        },
+        {
+          step: 3,
+          title: "Laporkan kanal berbahaya",
+          detail:
+            "Laporkan nomor, akun, atau rekening pelaku melalui platform terkait dan kanal resmi.",
+          urgency: "high",
+          action: { type: "link", value: "https://patrolisiber.id", label: "Buka PatroliSiber.id" },
+        },
+        {
+          step: 4,
+          title: "Jangan lanjutkan komunikasi dengan pelaku",
+          detail:
+            "Blokir setelah bukti disimpan. Jangan transfer biaya tambahan atau memberi data pribadi.",
+          urgency: "medium",
+          action: null,
+        },
+      ],
+      importantNotes: [
+        "Tetap tenang dan kerjakan langkah dari yang paling mendesak.",
+        "Petugas resmi tidak akan meminta OTP, PIN, password, atau CVV.",
+      ],
+    };
   }
 
   /**

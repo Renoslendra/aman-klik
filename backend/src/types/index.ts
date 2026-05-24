@@ -16,3 +16,20 @@ export interface AnalysisResponse {
   redFlags: RedFlag[];
   recommendations: string[];
 }
+
+export interface EmergencyActionStep {
+  step: number;
+  title: string;
+  detail: string;
+  urgency: "critical" | "high" | "medium";
+  action: { type: "phone" | "link"; value: string; label: string } | null;
+}
+
+export interface EmergencyDiagnosisResponse {
+  urgencyLevel: "critical" | "high" | "medium";
+  urgencyMessage: string;
+  timeWindow: string;
+  diagnosis: string;
+  actionPlan: EmergencyActionStep[];
+  importantNotes: string[];
+}
