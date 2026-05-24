@@ -2,7 +2,7 @@
 
 import { useState, type ComponentType } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Particles, ShapeGrid } from "@/components/effects/LazyVisuals";
+import { ShapeGrid  } from "@/components/effects/LazyVisuals";
 import AICyberMedic from "./emergency/AICyberMedic";
 import EmergencyContacts from "./emergency/EmergencyContacts";
 import EmergencyGuide from "./emergency/EmergencyGuide";
@@ -83,18 +83,7 @@ export default function EmergencyModeSection() {
       </div>
 
       <div className="absolute inset-0 z-0 opacity-[0.22] pointer-events-none">
-        <Particles
-          particleCount={35}
-          particleSpread={8}
-          speed={0.06}
-          particleColors={["#ef4444", "#fca5a5", "#dc2626"]}
-          moveParticlesOnHover={true}
-          particleHoverFactor={0.8}
-          alphaParticles={true}
-          particleBaseSize={80}
-          sizeRandomness={0.7}
-          cameraDistance={20}
-        />
+        
       </div>
 
       <div className="relative z-10 max-w-[1200px] mx-auto">

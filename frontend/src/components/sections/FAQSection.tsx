@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Particles, ShapeGrid } from "@/components/effects/LazyVisuals";
+import { ShapeGrid  } from "@/components/effects/LazyVisuals";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -89,18 +89,7 @@ export default function FAQSection() {
         />
       </div>
       <div className="absolute inset-0 z-0 opacity-[0.16] pointer-events-none">
-        <Particles
-          particleCount={28}
-          particleSpread={9}
-          speed={0.04}
-          particleColors={["#22d3ee", "#0891b2", "#06b6d4"]}
-          moveParticlesOnHover={true}
-          particleHoverFactor={0.6}
-          alphaParticles={true}
-          particleBaseSize={70}
-          sizeRandomness={0.7}
-          cameraDistance={20}
-        />
+        
       </div>
 
       <div className="relative z-10 max-w-[1200px] mx-auto">

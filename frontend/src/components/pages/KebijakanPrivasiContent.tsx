@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Particles, ShapeGrid } from "@/components/effects/LazyVisuals";
+import { ShapeGrid  } from "@/components/effects/LazyVisuals";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -77,18 +77,7 @@ export default function KebijakanPrivasiContent() {
 
       {/* Isolated WebGL Particles Background */}
       <div className="absolute inset-0 z-0 opacity-[0.25] pointer-events-none">
-        <Particles
-          particleCount={28}
-          particleSpread={8}
-          speed={0.04}
-          particleColors={["#22d3ee", "#0ea5e9", "#2563eb"]}
-          moveParticlesOnHover={true}
-          particleHoverFactor={0.6}
-          alphaParticles={true}
-          particleBaseSize={70}
-          sizeRandomness={0.6}
-          cameraDistance={22}
-        />
+        
       </div>
 
       <div className="relative z-10 max-w-[900px] mx-auto">

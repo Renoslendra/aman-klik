@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Particles, ShapeGrid } from "@/components/effects/LazyVisuals";
+import { ShapeGrid  } from "@/components/effects/LazyVisuals";
 import { useDeviceCapability } from "@/hooks/useDeviceCapability";
 import { useAuth } from "@/lib/auth";
 import { api } from "@/lib/api";
@@ -309,23 +309,7 @@ export default function RiwayatPage() {
           )}
         </div>
 
-        {/* Isolated WebGL Particles Background */}
-        <div className="absolute inset-0 z-0 opacity-[0.25] pointer-events-none">
-          {canRunWebGL && (
-            <Particles
-              particleCount={28}
-              particleSpread={8}
-              speed={0.04}
-              particleColors={["#22d3ee", "#0ea5e9", "#2563eb"]}
-              moveParticlesOnHover={true}
-              particleHoverFactor={0.6}
-              alphaParticles={true}
-              particleBaseSize={70}
-              sizeRandomness={0.6}
-              cameraDistance={22}
-            />
-          )}
-        </div>
+
 
         <div className="relative z-10 max-w-md w-full text-center">
           <motion.div
@@ -380,23 +364,7 @@ export default function RiwayatPage() {
         )}
       </div>
 
-      {/* Isolated WebGL Particles Background */}
-      <div className="absolute inset-0 z-0 opacity-[0.25] pointer-events-none">
-        {canRunWebGL && (
-          <Particles
-            particleCount={28}
-            particleSpread={8}
-            speed={0.04}
-            particleColors={["#22d3ee", "#0ea5e9", "#2563eb"]}
-            moveParticlesOnHover={true}
-            particleHoverFactor={0.6}
-            alphaParticles={true}
-            particleBaseSize={70}
-            sizeRandomness={0.6}
-            cameraDistance={22}
-          />
-        )}
-      </div>
+
 
       <div className="relative z-10 max-w-[960px] mx-auto">
         {/* Header */}

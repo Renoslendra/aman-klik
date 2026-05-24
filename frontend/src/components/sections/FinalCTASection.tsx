@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Particles, ShapeGrid } from "@/components/effects/LazyVisuals";
+import { ShapeGrid  } from "@/components/effects/LazyVisuals";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -49,18 +49,7 @@ export default function FinalCTASection() {
         />
       </div>
       <div className="absolute inset-0 z-0 opacity-[0.25] pointer-events-none">
-        <Particles
-          particleCount={28}
-          particleSpread={10}
-          speed={0.05}
-          particleColors={["#22d3ee", "#0891b2", "#06b6d4"]}
-          moveParticlesOnHover={true}
-          particleHoverFactor={0.8}
-          alphaParticles={true}
-          particleBaseSize={85}
-          sizeRandomness={0.75}
-          cameraDistance={20}
-        />
+        
       </div>
       <div className="absolute left-1/2 top-1/2 z-0 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/10 blur-[120px]" />
       <div className="absolute bottom-0 left-1/2 z-0 h-[220px] w-[680px] -translate-x-1/2 rounded-full bg-blue-500/10 blur-[110px]" />

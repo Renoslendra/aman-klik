@@ -84,6 +84,5 @@ function createLazyVisual(loader: VisualLoader) {
   };
 }
 
-export const Particles = createLazyVisual(() => import("@/components/effects/Particles"));
 export const ShapeGrid = createLazyVisual(() => import("@/components/effects/ShapeGrid"));
 export const LetterGlitch = createLazyVisual(() => import("@/components/effects/LetterGlitch"));

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Particles, ShapeGrid } from "@/components/effects/LazyVisuals";
+import { ShapeGrid  } from "@/components/effects/LazyVisuals";
 // -------------------------------------------------------------
 // BESPOKE CUSTOM DUOTONE SVG ICONS
 // -------------------------------------------------------------
@@ -102,18 +102,7 @@ export default function ResultPreviewSection() {
 
       {/* Isolated WebGL Particles Background */}
       <div className="absolute inset-0 z-0 opacity-[0.22] pointer-events-none">
-        <Particles 
-          particleCount={35} 
-          particleSpread={9}
-          speed={0.05}
-          particleColors={['#38bdf8', '#0284c7', '#0369a1']}
-          moveParticlesOnHover={true}
-          particleHoverFactor={0.8}
-          alphaParticles={true}
-          particleBaseSize={80}
-          sizeRandomness={0.7}
-          cameraDistance={20}
-        />
+        
       </div>
 
       <div className="relative z-10 max-w-[1200px] mx-auto">

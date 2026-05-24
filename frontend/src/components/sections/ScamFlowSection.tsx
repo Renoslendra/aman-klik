@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Particles, ShapeGrid } from "@/components/effects/LazyVisuals";
+import { ShapeGrid  } from "@/components/effects/LazyVisuals";
 
 const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const } } };
 const tiltReveal = { hidden: { opacity: 0, y: 32, rotateX: 12 }, visible: { opacity: 1, y: 0, rotateX: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const } } };
@@ -130,18 +130,7 @@ export default function ScamFlowSection() {
 
       {/* Isolated WebGL Particles Background */}
       <div className="absolute inset-0 z-0 opacity-[0.22] pointer-events-none">
-        <Particles 
-          particleCount={35} 
-          particleSpread={8}
-          speed={0.05}
-          particleColors={['#a855f7', '#7c3aed', '#8b5cf6']}
-          moveParticlesOnHover={true}
-          particleHoverFactor={0.8}
-          alphaParticles={true}
-          particleBaseSize={75}
-          sizeRandomness={0.7}
-          cameraDistance={20}
-        />
+        
       </div>
 
       <div className="relative z-10 max-w-[1200px] mx-auto">

@@ -3,7 +3,7 @@
 import { useState, type ChangeEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { Particles, ShapeGrid } from "@/components/effects/LazyVisuals";
+import { ShapeGrid  } from "@/components/effects/LazyVisuals";
 import { useDeviceCapability } from "@/hooks/useDeviceCapability";
 import { ApiError, api } from "@/lib/api";
 
@@ -259,23 +259,7 @@ export default function LiveDemoSection() {
         )}
       </div>
 
-      {/* Isolated WebGL Particles Background */}
-      <div className="absolute inset-0 z-0 opacity-[0.25] pointer-events-none">
-        {canRunWebGL && (
-          <Particles 
-            particleCount={35} 
-            particleSpread={10}
-            speed={0.05}
-            particleColors={['#22d3ee', '#0891b2', '#06b6d4']}
-            moveParticlesOnHover={true}
-            particleHoverFactor={0.8}
-            alphaParticles={true}
-            particleBaseSize={85}
-            sizeRandomness={0.75}
-            cameraDistance={20}
-          />
-        )}
-      </div>
+
 
       <div className="relative z-10 max-w-[1200px] mx-auto">
         <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={staggerContainer} className="text-center mb-16">

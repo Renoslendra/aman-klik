@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Particles, ShapeGrid } from "@/components/effects/LazyVisuals";
+import { ShapeGrid  } from "@/components/effects/LazyVisuals";
 
 const fadeUp = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const } } };
 const staggerContainer = { hidden: {}, visible: { transition: { staggerChildren: 0.12, delayChildren: 0.08 } } };
@@ -104,18 +104,7 @@ export default function EducationSection() {
 
       {/* Isolated WebGL Particles Background */}
       <div className="absolute inset-0 z-0 opacity-[0.22] pointer-events-none">
-        <Particles 
-          particleCount={35} 
-          particleSpread={9}
-          speed={0.05}
-          particleColors={['#3b82f6', '#1d4ed8', '#60a5fa']}
-          moveParticlesOnHover={true}
-          particleHoverFactor={0.8}
-          alphaParticles={true}
-          particleBaseSize={80}
-          sizeRandomness={0.7}
-          cameraDistance={20}
-        />
+        
       </div>
 
       <div className="relative z-10 max-w-[1200px] mx-auto">
