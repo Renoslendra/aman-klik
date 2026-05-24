@@ -303,51 +303,72 @@ Berikan JSON murni tanpa markdown, tanpa komentar, dengan struktur PERSIS beriku
 
 INGAT: Respon Anda HARUS akurat, spesifik sesuai deskripsi korban, dan tidak boleh mengarang fakta. Jika informasi tidak disebutkan korban, jangan asumsikan — gunakan frasa seperti "jika bank Anda adalah..." atau "segera hubungi bank terkait".`;
 
-      const response = await aiClient.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: prompt,
-        config: {
-          responseMimeType: "application/json",
-          temperature: 0.1,
-          topP: 0.8,
-          topK: 20,
-        },
-      });
+      // Retry logic for rate limit (429) errors
+      let lastError: unknown = null;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          const response = await aiClient.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: prompt,
+            config: {
+              responseMimeType: "application/json",
+              temperature: 0.1,
+              topP: 0.8,
+              topK: 20,
+            },
+          });
 
-      const responseText = response.text;
-      if (!responseText) {
-        throw new Error("Menerima respon kosong dari Gemini API.");
-      }
+          const responseText = response.text;
+          if (!responseText) {
+            throw new Error("Menerima respon kosong dari Gemini API.");
+          }
 
-      const result: EmergencyDiagnosisResponse = JSON.parse(responseText);
-      if (!result.urgencyLevel || !Array.isArray(result.actionPlan)) {
-        throw new Error("Format respon diagnosis darurat tidak valid.");
-      }
+          const result: EmergencyDiagnosisResponse = JSON.parse(responseText);
+          if (!result.urgencyLevel || !Array.isArray(result.actionPlan)) {
+            throw new Error("Format respon diagnosis darurat tidak valid.");
+          }
 
-      // Validate urgencyLevel is one of the allowed values
-      const validUrgencies = ["critical", "high", "medium"] as const;
-      if (!validUrgencies.includes(result.urgencyLevel)) {
-        result.urgencyLevel = "high";
-      }
+          // Validate urgencyLevel is one of the allowed values
+          const validUrgencies = ["critical", "high", "medium"] as const;
+          if (!validUrgencies.includes(result.urgencyLevel)) {
+            result.urgencyLevel = "high";
+          }
 
-      // Validate each action step has valid urgency
-      result.actionPlan.forEach((step) => {
-        if (!validUrgencies.includes(step.urgency)) {
-          step.urgency = "high";
+          // Validate each action step has valid urgency
+          result.actionPlan.forEach((step) => {
+            if (!validUrgencies.includes(step.urgency)) {
+              step.urgency = "high";
+            }
+          });
+
+          const normalizedResult: EmergencyDiagnosisResponse = {
+            ...result,
+            actionPlan: result.actionPlan.map((step) => ({
+              ...step,
+              action: normalizeEmergencyAction(step.action),
+            })),
+            importantNotes: Array.isArray(result.importantNotes) ? result.importantNotes : [],
+          };
+
+          logger.info(`Emergency diagnosed by Gemini. Urgency: ${normalizedResult.urgencyLevel}`);
+          return normalizedResult;
+        } catch (error: unknown) {
+          lastError = error;
+          // Check if it's a rate limit error (429) and retry after delay
+          const errorStr = error instanceof Error ? error.message : String(error);
+          if (errorStr.includes("429") || errorStr.includes("RESOURCE_EXHAUSTED") || errorStr.includes("quota")) {
+            const retryDelay = Math.min(5000 * Math.pow(2, attempt), 30000); // 5s, 10s, 20s max 30s
+            logger.warn(`Gemini rate limited (attempt ${attempt + 1}/3). Retrying in ${retryDelay / 1000}s...`);
+            await new Promise((resolve) => setTimeout(resolve, retryDelay));
+            continue;
+          }
+          // For non-rate-limit errors, don't retry
+          break;
         }
-      });
+      }
 
-      const normalizedResult: EmergencyDiagnosisResponse = {
-        ...result,
-        actionPlan: result.actionPlan.map((step) => ({
-          ...step,
-          action: normalizeEmergencyAction(step.action),
-        })),
-        importantNotes: Array.isArray(result.importantNotes) ? result.importantNotes : [],
-      };
-
-      logger.info(`Emergency diagnosed by Gemini. Urgency: ${normalizedResult.urgencyLevel}`);
-      return normalizedResult;
+      logger.error("Error calling Gemini for emergency diagnosis (all retries exhausted):", lastError);
+      return this.getMockEmergencyDiagnosis(description, category);
     } catch (error) {
       logger.error("Error calling Gemini for emergency diagnosis:", error);
       return this.getMockEmergencyDiagnosis(description, category);
@@ -355,63 +376,144 @@ INGAT: Respon Anda HARUS akurat, spesifik sesuai deskripsi korban, dan tidak bol
   }
 
   /**
-   * Mock emergency diagnosis for development without an API key.
+   * Detects bank names mentioned in the user's description and returns
+   * the first match with its call center info.
+   */
+  private static detectBanks(description: string): Array<{ name: string; phone: string; phoneLabel: string }> {
+    const descLower = description.toLowerCase();
+    const bankDatabase: Array<{ keywords: string[]; name: string; phone: string; phoneLabel: string }> = [
+      { keywords: ["bca", "bank central asia"], name: "BCA", phone: "tel:1500888", phoneLabel: "Hubungi BCA 1500888" },
+      { keywords: ["bri", "bank rakyat indonesia"], name: "BRI", phone: "tel:14017", phoneLabel: "Hubungi BRI 14017" },
+      { keywords: ["mandiri", "bank mandiri"], name: "Mandiri", phone: "tel:14000", phoneLabel: "Hubungi Mandiri 14000" },
+      { keywords: ["bni", "bank negara indonesia"], name: "BNI", phone: "tel:1500046", phoneLabel: "Hubungi BNI 1500046" },
+      { keywords: ["bsi", "bank syariah indonesia"], name: "BSI", phone: "tel:14040", phoneLabel: "Hubungi BSI 14040" },
+      { keywords: ["dana"], name: "DANA", phone: "tel:1500445", phoneLabel: "Hubungi DANA 1500445" },
+      { keywords: ["ovo"], name: "OVO", phone: "tel:1500696", phoneLabel: "Hubungi OVO 1500696" },
+      { keywords: ["gopay", "gojek"], name: "GoPay", phone: "tel:1500729", phoneLabel: "Hubungi GoPay 1500729" },
+      { keywords: ["shopeepay", "shopee"], name: "ShopeePay", phone: "tel:1500702", phoneLabel: "Hubungi ShopeePay 1500702" },
+      { keywords: ["linkaja", "link aja"], name: "LinkAja", phone: "tel:150911", phoneLabel: "Hubungi LinkAja 150911" },
+    ];
+
+    return bankDatabase.filter((bank) => bank.keywords.some((kw) => descLower.includes(kw)));
+  }
+
+  /**
+   * Detects monetary amounts mentioned in the description.
+   */
+  private static detectAmount(description: string): string | null {
+    const match = description.match(/[Rr]p\.?\s*([\d.,]+)/);
+    if (match) {
+      return `Rp ${match[1]}`;
+    }
+    return null;
+  }
+
+  /**
+   * Detects platform names mentioned in the description.
+   */
+  private static detectPlatform(description: string): string | null {
+    const descLower = description.toLowerCase();
+    const platforms = [
+      { keywords: ["instagram", "ig"], name: "Instagram" },
+      { keywords: ["whatsapp", "wa"], name: "WhatsApp" },
+      { keywords: ["facebook", "fb"], name: "Facebook" },
+      { keywords: ["telegram", "tele"], name: "Telegram" },
+      { keywords: ["tokopedia", "tokped"], name: "Tokopedia" },
+      { keywords: ["shopee"], name: "Shopee" },
+      { keywords: ["bukalapak"], name: "Bukalapak" },
+      { keywords: ["lazada"], name: "Lazada" },
+      { keywords: ["twitter", "x.com"], name: "Twitter/X" },
+      { keywords: ["tiktok"], name: "TikTok" },
+    ];
+    const found = platforms.find((p) => p.keywords.some((kw) => descLower.includes(kw)));
+    return found ? found.name : null;
+  }
+
+  /**
+   * Smart mock emergency diagnosis that reads the user's description
+   * and generates contextual responses based on category + detected details.
    */
   private static getMockEmergencyDiagnosis(
     description: string,
     category?: string
   ): EmergencyDiagnosisResponse {
     const descLower = description.toLowerCase();
-    const isTransfer =
-      category === "transfer" ||
-      descLower.includes("transfer") ||
-      descLower.includes("kirim uang") ||
-      descLower.includes("rekening");
-    const isOtp =
-      category === "otp" ||
-      descLower.includes("otp") ||
-      descLower.includes("kode verifikasi") ||
-      descLower.includes("pin");
-    const isHack =
-      category === "hack" ||
-      descLower.includes("hack") ||
-      descLower.includes("diambil alih") ||
-      descLower.includes("diretas");
-    const isApk =
-      category === "apk" ||
-      descLower.includes("apk") ||
-      descLower.includes("aplikasi") ||
-      descLower.includes("kurir");
+    const banks = this.detectBanks(description);
+    const amount = this.detectAmount(description);
+    const platform = this.detectPlatform(description);
 
-    if (isTransfer) {
+    // PERBAIKAN UTAMA: Prioritaskan kategori yang dipilih user, bukan keyword matching
+    let effectiveCategory = category;
+    if (!effectiveCategory || effectiveCategory === "other") {
+      // Hanya fallback ke keyword jika user tidak memilih kategori spesifik
+      if (descLower.includes("otp") || descLower.includes("kode verifikasi") || descLower.includes("pin")) {
+        effectiveCategory = "otp";
+      } else if (descLower.includes("hack") || descLower.includes("diambil alih") || descLower.includes("diretas")) {
+        effectiveCategory = "hack";
+      } else if (descLower.includes("apk") || descLower.includes("kurir") || descLower.includes("instal")) {
+        effectiveCategory = "apk";
+      } else if (descLower.includes("link") || descLower.includes("klik") || descLower.includes("phishing")) {
+        effectiveCategory = "link";
+      } else if (descLower.includes("transfer") || descLower.includes("kirim uang") || descLower.includes("rekening")) {
+        effectiveCategory = "transfer";
+      } else {
+        effectiveCategory = "other";
+      }
+    }
+
+    // Helper: buat action call center berdasarkan bank yang terdeteksi
+    const primaryBank = banks[0] || { name: "bank Anda", phone: "tel:14000", phoneLabel: "Hubungi call center bank Anda" };
+    const secondaryBank = banks[1] || null;
+
+    // Helper: buat diagnosis string yang kontekstual
+    const amountInfo = amount ? ` sebesar ${amount}` : "";
+    const platformInfo = platform ? ` melalui ${platform}` : "";
+    const bankInfo = banks.length > 0
+      ? ` (${banks.map((b) => b.name).join(" → ")})`
+      : "";
+
+    if (effectiveCategory === "transfer") {
       return {
         urgencyLevel: "critical",
-        urgencyMessage: "KRITIS - Segera hubungi bank pengirim dan bank penerima.",
+        urgencyMessage: `KRITIS - Segera hubungi ${primaryBank.name} untuk hold fund rekening tujuan.`,
         timeWindow: "15-60 menit pertama adalah waktu paling penting",
         diagnosis:
-          "Anda kemungkinan menjadi korban penipuan transfer dana. Fokus utama saat ini adalah meminta bank menandai atau membekukan rekening tujuan sebelum dana ditarik pelaku.",
+          `Anda kemungkinan menjadi korban penipuan transfer dana${amountInfo}${platformInfo}${bankInfo}. Fokus utama saat ini adalah meminta bank menandai atau membekukan rekening tujuan sebelum dana ditarik pelaku.`,
         actionPlan: [
           {
             step: 1,
-            title: "Telepon call center bank pengirim",
+            title: `Telepon call center ${primaryBank.name}`,
             detail:
-              "Sampaikan bahwa Anda korban penipuan online, baru melakukan transfer, dan minta bantuan blokir atau hold fund rekening tujuan. Catat nomor tiket laporan.",
+              `Sampaikan bahwa Anda korban penipuan online, baru melakukan transfer${amountInfo}, dan minta bantuan blokir atau hold fund rekening tujuan. Catat nomor tiket laporan.`,
             urgency: "critical",
-            action: { type: "phone", value: "tel:1500888", label: "Hubungi BCA 1500888" },
+            action: { type: "phone", value: primaryBank.phone, label: primaryBank.phoneLabel },
           },
-          {
-            step: 2,
-            title: "Telepon bank penerima jika diketahui",
-            detail:
-              "Jika rekening tujuan berada di BRI, Mandiri, BNI, BSI, atau bank lain, hubungi call center bank tersebut juga untuk mempercepat pelaporan rekening tujuan.",
-            urgency: "critical",
-            action: { type: "phone", value: "tel:14017", label: "Hubungi BRI 14017" },
-          },
+          ...(secondaryBank
+            ? [
+                {
+                  step: 2,
+                  title: `Telepon bank penerima (${secondaryBank.name})`,
+                  detail:
+                    `Hubungi call center ${secondaryBank.name} juga untuk mempercepat pelaporan dan pembekuan rekening tujuan pelaku.`,
+                  urgency: "critical" as const,
+                  action: { type: "phone" as const, value: secondaryBank.phone, label: secondaryBank.phoneLabel },
+                },
+              ]
+            : [
+                {
+                  step: 2,
+                  title: "Telepon bank penerima jika diketahui",
+                  detail:
+                    "Jika rekening tujuan berada di bank lain, hubungi call center bank tersebut juga untuk mempercepat pelaporan rekening tujuan.",
+                  urgency: "critical" as const,
+                  action: null,
+                },
+              ]),
           {
             step: 3,
             title: "Screenshot seluruh bukti",
             detail:
-              "Simpan bukti transfer, chat, profil akun pelaku, nomor rekening, nama pemilik rekening, iklan, dan link transaksi.",
+              `Simpan bukti transfer, chat${platform ? ` di ${platform}` : ""}, profil akun pelaku, nomor rekening, nama pemilik rekening, dan link transaksi.`,
             urgency: "critical",
             action: null,
           },
@@ -448,24 +550,36 @@ INGAT: Respon Anda HARUS akurat, spesifik sesuai deskripsi korban, dan tidak bol
       };
     }
 
-    if (isOtp) {
+    if (effectiveCategory === "otp") {
       return {
         urgencyLevel: "critical",
-        urgencyMessage: "KRITIS - OTP atau PIN bocor, amankan akun sekarang.",
+        urgencyMessage: `KRITIS - OTP atau PIN bocor, segera amankan akun ${primaryBank.name}.`,
         timeWindow: "Tindakan perlu dilakukan dalam hitungan menit",
         diagnosis:
-          "Kode OTP atau PIN yang sudah diberikan ke pihak lain dapat dipakai untuk mengambil alih transaksi. Perlakukan akun bank, e-wallet, dan email yang terhubung sebagai berisiko.",
+          `Kode OTP atau PIN yang sudah diberikan ke pihak lain dapat dipakai untuk mengambil alih transaksi${bankInfo}. Perlakukan akun bank, e-wallet, dan email yang terhubung sebagai berisiko.${amountInfo ? ` Potensi kerugian: ${amount}.` : ""}`,
         actionPlan: [
           {
             step: 1,
-            title: "Hubungi bank atau e-wallet terkait",
+            title: `Hubungi ${primaryBank.name} segera`,
             detail:
-              "Minta blokir sementara transaksi dan jelaskan bahwa OTP atau PIN sudah diketahui pihak lain.",
+              `Minta blokir sementara seluruh transaksi dan jelaskan bahwa OTP atau PIN sudah diketahui pihak lain.`,
             urgency: "critical",
-            action: { type: "phone", value: "tel:14000", label: "Hubungi Mandiri 14000" },
+            action: { type: "phone", value: primaryBank.phone, label: primaryBank.phoneLabel },
           },
+          ...(secondaryBank
+            ? [
+                {
+                  step: 2,
+                  title: `Hubungi ${secondaryBank.name} juga`,
+                  detail:
+                    `Jika ada dana yang ditransfer ke ${secondaryBank.name}, hubungi untuk melaporkan dan meminta pembekuan rekening tujuan.`,
+                  urgency: "critical" as const,
+                  action: { type: "phone" as const, value: secondaryBank.phone, label: secondaryBank.phoneLabel },
+                },
+              ]
+            : []),
           {
-            step: 2,
+            step: secondaryBank ? 3 : 2,
             title: "Ganti PIN dan password",
             detail:
               "Lakukan dari perangkat aman. Jika tidak bisa login, minta pemulihan resmi melalui call center atau cabang.",
@@ -473,7 +587,7 @@ INGAT: Respon Anda HARUS akurat, spesifik sesuai deskripsi korban, dan tidak bol
             action: null,
           },
           {
-            step: 3,
+            step: secondaryBank ? 4 : 3,
             title: "Cabut semua sesi perangkat asing",
             detail:
               "Periksa daftar perangkat login pada mobile banking, email, marketplace, dan media sosial.",
@@ -481,7 +595,7 @@ INGAT: Respon Anda HARUS akurat, spesifik sesuai deskripsi korban, dan tidak bol
             action: null,
           },
           {
-            step: 4,
+            step: secondaryBank ? 5 : 4,
             title: "Amankan email utama",
             detail:
               "Ganti password email dan aktifkan 2FA karena email sering dipakai untuk reset akun keuangan.",
@@ -489,7 +603,7 @@ INGAT: Respon Anda HARUS akurat, spesifik sesuai deskripsi korban, dan tidak bol
             action: null,
           },
           {
-            step: 5,
+            step: secondaryBank ? 6 : 5,
             title: "Pantau mutasi transaksi",
             detail:
               "Simpan screenshot transaksi mencurigakan dan segera laporkan jika ada dana keluar.",
@@ -504,21 +618,33 @@ INGAT: Respon Anda HARUS akurat, spesifik sesuai deskripsi korban, dan tidak bol
       };
     }
 
-    if (isHack) {
+    if (effectiveCategory === "hack") {
+      const platformRecoveryLinks: Record<string, { value: string; label: string }> = {
+        Google: { value: "https://accounts.google.com/signin/recovery", label: "Google Recovery" },
+        WhatsApp: { value: "https://faq.whatsapp.com/1131652977717250", label: "Pemulihan WhatsApp" },
+        Instagram: { value: "https://help.instagram.com/368191326593075", label: "Pemulihan Instagram" },
+        Facebook: { value: "https://www.facebook.com/hacked", label: "Pemulihan Facebook" },
+        Telegram: { value: "https://telegram.org", label: "Buka Telegram Settings > Devices" },
+        "Twitter/X": { value: "https://help.twitter.com/en/safety-and-security/twitter-account-compromised", label: "Pemulihan Twitter/X" },
+      };
+      const recoveryLink = platform && platformRecoveryLinks[platform]
+        ? platformRecoveryLinks[platform]
+        : { value: "https://accounts.google.com/signin/recovery", label: "Google Recovery" };
+
       return {
         urgencyLevel: "high",
-        urgencyMessage: "TINGGI - Mulai pemulihan akun dari kanal resmi.",
+        urgencyMessage: `TINGGI - Mulai pemulihan akun${platform ? ` ${platform}` : ""} dari kanal resmi.`,
         timeWindow: "Kerjakan pemulihan hari ini dan amankan email utama",
         diagnosis:
-          "Akun Anda terindikasi diambil alih atau disalahgunakan. Prioritasnya adalah menguasai kembali email atau nomor pemulihan, lalu mencabut sesi pelaku.",
+          `Akun Anda${platform ? ` di ${platform}` : ""} terindikasi diambil alih atau disalahgunakan. Prioritasnya adalah menguasai kembali email atau nomor pemulihan, lalu mencabut sesi pelaku.`,
         actionPlan: [
           {
             step: 1,
-            title: "Buka halaman pemulihan resmi",
+            title: `Buka halaman pemulihan resmi${platform ? ` ${platform}` : ""}`,
             detail:
               "Gunakan recovery resmi platform. Jangan memakai jasa pemulihan akun dari DM atau iklan.",
             urgency: "critical",
-            action: { type: "link", value: "https://accounts.google.com/signin/recovery", label: "Google Recovery" },
+            action: { type: "link", value: recoveryLink.value, label: recoveryLink.label },
           },
           {
             step: 2,
@@ -548,7 +674,7 @@ INGAT: Respon Anda HARUS akurat, spesifik sesuai deskripsi korban, dan tidak bol
             step: 5,
             title: "Laporkan aktivitas pelaku",
             detail:
-              "Gunakan fitur report di platform dan simpan bukti postingan, chat, atau perubahan email.",
+              `Gunakan fitur report di ${platform || "platform terkait"} dan simpan bukti postingan, chat, atau perubahan email.`,
             urgency: "medium",
             action: null,
           },
@@ -560,13 +686,13 @@ INGAT: Respon Anda HARUS akurat, spesifik sesuai deskripsi korban, dan tidak bol
       };
     }
 
-    if (isApk) {
+    if (effectiveCategory === "apk") {
       return {
         urgencyLevel: "critical",
-        urgencyMessage: "KRITIS - APK mencurigakan bisa membaca SMS dan OTP.",
+        urgencyMessage: "KRITIS - APK mencurigakan bisa membaca SMS dan OTP Anda.",
         timeWindow: "Putuskan koneksi dan amankan akun dalam 15 menit",
         diagnosis:
-          "File APK dari chat atau pesan kurir palsu berisiko memasang malware. Prioritasnya adalah menghentikan akses perangkat dan mengamankan akun keuangan dari perangkat lain.",
+          `File APK dari chat${platform ? ` ${platform}` : ""} atau pesan kurir palsu berisiko memasang malware. Prioritasnya adalah menghentikan akses perangkat dan mengamankan akun keuangan dari perangkat lain.`,
         actionPlan: [
           {
             step: 1,
@@ -578,11 +704,11 @@ INGAT: Respon Anda HARUS akurat, spesifik sesuai deskripsi korban, dan tidak bol
           },
           {
             step: 2,
-            title: "Hubungi bank dari perangkat lain",
+            title: `Hubungi ${primaryBank.name} dari perangkat lain`,
             detail:
               "Minta blokir sementara transaksi jika perangkat yang terinfeksi memiliki mobile banking atau SMS OTP.",
             urgency: "critical",
-            action: { type: "phone", value: "tel:1500046", label: "Hubungi BNI 1500046" },
+            action: { type: "phone", value: primaryBank.phone, label: primaryBank.phoneLabel },
           },
           {
             step: 3,
@@ -616,12 +742,74 @@ INGAT: Respon Anda HARUS akurat, spesifik sesuai deskripsi korban, dan tidak bol
       };
     }
 
+    if (effectiveCategory === "link") {
+      return {
+        urgencyLevel: banks.length > 0 ? "critical" : "high",
+        urgencyMessage: banks.length > 0
+          ? `KRITIS - Data login ${primaryBank.name} mungkin bocor, segera ganti password.`
+          : "TINGGI - Ganti password akun yang datanya sudah dimasukkan.",
+        timeWindow: "Ganti semua password yang terdampak hari ini",
+        diagnosis:
+          `Anda telah mengklik link mencurigakan${platformInfo} dan kemungkinan memasukkan data login di halaman palsu (phishing). Data yang dimasukkan berisiko digunakan pelaku untuk mengakses akun Anda.`,
+        actionPlan: [
+          {
+            step: 1,
+            title: "Ganti password akun yang datanya dimasukkan",
+            detail:
+              `Segera ganti password${banks.length > 0 ? ` ${primaryBank.name}` : " akun terkait"} dari perangkat aman. Jangan gunakan password lama.`,
+            urgency: "critical",
+            action: banks.length > 0
+              ? { type: "phone", value: primaryBank.phone, label: primaryBank.phoneLabel }
+              : null,
+          },
+          {
+            step: 2,
+            title: "Aktifkan 2FA di semua akun penting",
+            detail:
+              "Aktifkan verifikasi dua langkah (2FA) di email, bank, e-wallet, dan media sosial.",
+            urgency: "critical",
+            action: null,
+          },
+          {
+            step: 3,
+            title: "Cek mutasi rekening",
+            detail:
+              "Periksa apakah ada transaksi mencurigakan. Jika ada, segera hubungi bank untuk blokir.",
+            urgency: "high",
+            action: null,
+          },
+          {
+            step: 4,
+            title: "Hapus cache dan cookies browser",
+            detail:
+              "Bersihkan data browsing agar sesi login palsu tidak tersimpan.",
+            urgency: "high",
+            action: null,
+          },
+          {
+            step: 5,
+            title: "Laporkan URL phishing",
+            detail:
+              "Laporkan link mencurigakan ke Patroli Siber agar situs tersebut ditindak.",
+            urgency: "medium",
+            action: { type: "link", value: "https://patrolisiber.id", label: "Buka PatroliSiber.id" },
+          },
+        ],
+        importantNotes: [
+          "Jangan kembali ke link tersebut atau memasukkan data tambahan.",
+          "Jika Anda memasukkan data bank (username, password, PIN), hubungi bank segera.",
+          "Petugas resmi tidak akan meminta OTP, PIN, password, atau CVV.",
+        ],
+      };
+    }
+
+    // Default fallback for "other" category
     return {
       urgencyLevel: "high",
       urgencyMessage: "TINGGI - Segera ambil langkah pengamanan dasar.",
       timeWindow: "Selesaikan tindakan utama hari ini",
       diagnosis:
-        "Insiden keamanan digital terdeteksi. Karena detail belum cukup spesifik, mulai dari pengamanan akun utama, pengumpulan bukti, dan pelaporan resmi bila ada kerugian.",
+        `Insiden keamanan digital terdeteksi${platformInfo}${bankInfo}. Mulai dari pengamanan akun utama, pengumpulan bukti, dan pelaporan resmi bila ada kerugian.`,
       actionPlan: [
         {
           step: 1,
@@ -629,13 +817,15 @@ INGAT: Respon Anda HARUS akurat, spesifik sesuai deskripsi korban, dan tidak bol
           detail:
             "Ganti password dari perangkat aman dan aktifkan 2FA pada email, bank, e-wallet, dan marketplace.",
           urgency: "critical",
-          action: null,
+          action: banks.length > 0
+            ? { type: "phone", value: primaryBank.phone, label: primaryBank.phoneLabel }
+            : null,
         },
         {
           step: 2,
           title: "Kumpulkan bukti",
           detail:
-            "Screenshot chat, nomor, link, bukti transaksi, profil akun, dan waktu kejadian.",
+            `Screenshot chat, nomor, link, bukti transaksi${platform ? ` di ${platform}` : ""}, profil akun, dan waktu kejadian.`,
           urgency: "high",
           action: null,
         },
