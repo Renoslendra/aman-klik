@@ -42,115 +42,61 @@ const categoryStyle: Record<ContactCategory, string> = {
 };
 
 const contactLogos: Record<string, React.ReactNode> = {
-  BRI: (
-    <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="40" height="40" rx="8" fill="#00529C" />
-      <text x="18" y="23" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="11" fontWeight="900" fontFamily="system-ui, sans-serif">
-        BRI
-      </text>
-      <rect x="27" y="11" width="3.5" height="3.5" fill="#F58220" />
-    </svg>
-  ),
-  BCA: (
-    <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="40" height="40" rx="8" fill="#00569e" />
-      <circle cx="20" cy="20" r="11" fill="white" />
-      <text x="20" y="22.5" dominantBaseline="middle" textAnchor="middle" fill="#00569e" fontSize="8" fontWeight="900" fontFamily="system-ui, sans-serif" letterSpacing="0.2">
-        BCA
-      </text>
-    </svg>
-  ),
-  Mandiri: (
-    <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="40" height="40" rx="8" fill="#003d79" />
-      <path d="M10 14 C15 11, 25 17, 30 13 C32 11, 33 12, 31 15 C27 19, 17 13, 12 17 C11 18, 9 17, 10 14 Z" fill="#F2A900" />
-      <text x="20" y="26" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="7" fontWeight="bold" fontFamily="system-ui, sans-serif" letterSpacing="0.3">
-        mandiri
-      </text>
-    </svg>
-  ),
-  BNI: (
-    <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="40" height="40" rx="8" fill="#eef6f6" />
-      <text x="15" y="22" dominantBaseline="middle" textAnchor="middle" fill="#006677" fontSize="10" fontWeight="bold" fontFamily="system-ui, sans-serif">
-        BNI
-      </text>
-      <path d="M26 10 L32 13 L30 29 L24 26 Z" fill="#FF6600" />
-      <text x="28" y="21" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="6.5" fontWeight="bold">
-        46
-      </text>
-    </svg>
-  ),
-  BSI: (
-    <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="40" height="40" rx="8" fill="#006A4E" />
-      <circle cx="20" cy="14" r="5" fill="#FFC72C" />
-      <circle cx="22.5" cy="14" r="5" fill="#006A4E" />
-      <text x="20" y="28" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold" fontFamily="system-ui, sans-serif" letterSpacing="0.5">
-        BSI
-      </text>
-    </svg>
-  ),
-  DANA: (
-    <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="40" height="40" rx="8" fill="#118EEA" />
-      <text x="20" y="22" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="10" fontWeight="950" fontFamily="system-ui, sans-serif" letterSpacing="0.2">
-        DANA
-      </text>
-    </svg>
-  ),
-  OVO: (
-    <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="40" height="40" rx="8" fill="#4C2A86" />
-      <circle cx="20" cy="20" r="13" stroke="#4cba72" strokeWidth="1.5" fill="none" />
-      <text x="20" y="22" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="9.5" fontWeight="bold" fontFamily="system-ui, sans-serif" letterSpacing="0.5">
-        ovo
-      </text>
-    </svg>
-  ),
-  GoPay: (
-    <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="40" height="40" rx="8" fill="#00AED6" />
-      <text x="20" y="21" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="9" fontWeight="900" fontFamily="system-ui, sans-serif">
-        gopay
-      </text>
-    </svg>
-  ),
-  OJK: (
-    <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="40" height="40" rx="8" fill="#8F1D21" />
-      <path d="M20 9 L28 14 V22 C28 26 25 29 20 31 C15 29 12 26 12 22 V14 Z" stroke="#D4AF37" strokeWidth="1.2" fill="none" opacity="0.6" />
-      <text x="20" y="21" dominantBaseline="middle" textAnchor="middle" fill="#D4AF37" fontSize="8" fontWeight="bold" fontFamily="system-ui, sans-serif">
-        OJK
-      </text>
-    </svg>
-  ),
+  BRI: <img src="/images/logos/bri.svg" alt="BRI" className="h-full w-full object-contain" />,
+  BCA: <img src="/images/logos/bca.svg" alt="BCA" className="h-full w-full object-contain" />,
+  Mandiri: <img src="/images/logos/mandiri.svg" alt="Mandiri" className="h-full w-full object-contain" />,
+  BNI: <img src="/images/logos/bni.svg" alt="BNI" className="h-full w-full object-contain bg-white rounded p-0.5" />,
+  BSI: <img src="/images/logos/bsi.png" alt="BSI" className="h-full w-full object-contain" />,
+  DANA: <img src="/images/logos/dana.svg" alt="DANA" className="h-full w-full object-contain" />,
+  OVO: <img src="/images/logos/ovo.svg" alt="OVO" className="h-full w-full object-contain" />,
+  GoPay: <img src="/images/logos/gopay.svg" alt="GoPay" className="h-full w-full object-contain" />,
+  OJK: <img src="/images/logos/ojk.png" alt="OJK" className="h-full w-full object-contain" />,
   "Patroli Siber": (
     <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="40" height="40" rx="8" fill="#1E293B" />
-      <path d="M20 8 L29 12 V20 C29 25 25 29 20 31 C15 29 11 25 11 20 V12 Z" fill="#3B82F6" opacity="0.25" stroke="#3B82F6" strokeWidth="1.5" />
-      <circle cx="20" cy="19" r="4" fill="#EF4444" opacity="0.8" />
-      <path d="M15 19 H25 M20 14 V24" stroke="#FBBF24" strokeWidth="1.2" strokeLinecap="round" />
+      {/* Dark Navy Shield Background */}
+      <path d="M 20 2 L 34 8 L 34 20 C 34 28 28 35 20 38 C 12 35 6 28 6 20 L 6 8 Z" fill="#0C1B33" stroke="#D4AF37" strokeWidth="1.5" />
+      {/* Inner gold border */}
+      <path d="M 20 4 L 32 9 L 32 20 C 32 27 27 33 20 36 C 13 33 8 27 8 20 L 8 9 Z" stroke="#D4AF37" strokeWidth="0.8" opacity="0.6" />
+      {/* 3 Gold Stars at the top */}
+      <polygon points="20,7 21,9 23,9 21.5,10.5 22,12.5 20,11 18,12.5 18.5,10.5 17,9 19,9" fill="#D4AF37" />
+      <polygon points="14,8 15,10 17,10 15.5,11.5 16,13.5 14,12 12,13.5 12.5,11.5 11,10 13,10" fill="#D4AF37" transform="scale(0.8) translate(3.5, 1.5)" />
+      <polygon points="26,8 27,10 29,10 27.5,11.5 28,13.5 26,12 24,13.5 24.5,11.5 23,10 25,10" fill="#D4AF37" transform="scale(0.8) translate(6.5, 1.5)" />
+      {/* Garuda wings shape in the center */}
+      <path d="M 12 18 C 16 16, 20 18, 20 18 C 20 18, 24 16, 28 18 C 26 22, 23 23, 20 23 C 17 23, 14 22, 12 18 Z" fill="#D4AF37" opacity="0.8" />
+      {/* Red shield in the center (Polri shield) */}
+      <path d="M 20 19 L 24 21 L 24 25 C 24 27 22 29 20 30 C 18 29 16 27 16 25 L 16 21 Z" fill="#C62828" stroke="#D4AF37" strokeWidth="0.8" />
+      {/* Gold scale/torch inside the red shield */}
+      <line x1="20" y1="21" x2="20" y2="28" stroke="#D4AF37" strokeWidth="1" />
+      <circle cx="20" cy="22" r="1.5" fill="#D4AF37" />
     </svg>
   ),
   CekRekening: (
     <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="40" height="40" rx="8" fill="#DC2626" />
-      <circle cx="20" cy="20" r="11" fill="white" />
-      <rect x="14" y="16" width="12" height="7" rx="1" fill="#DC2626" />
-      <circle cx="23" cy="22" r="3" stroke="#DC2626" strokeWidth="1.2" fill="white" />
-      <path d="M25 25 L28 28" stroke="#DC2626" strokeWidth="1.5" strokeLinecap="round" />
+      {/* Red background circle */}
+      <circle cx="20" cy="20" r="18" fill="#E52D27" />
+      {/* Magnifying glass form of C */}
+      <path d="M 23 13 C 17 13 13 17 13 22 C 13 27 17 31 22 31 C 26 31 29 28 30 24" stroke="white" strokeWidth="3" strokeLinecap="round" />
+      {/* Magnifying glass handle */}
+      <path d="M 28 26 L 33 31" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+      {/* Checkmark inside */}
+      <path d="M 17 21 L 20 24 L 25 18" stroke="#00E676" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
   "LAPOR!": (
-    <svg viewBox="0 0 40 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="40" height="40" rx="8" fill="#E11D48" />
-      <text x="20" y="20" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="7.5" fontWeight="900" fontFamily="system-ui, sans-serif" letterSpacing="0.2">
+    <svg viewBox="0 0 120 40" className="h-full w-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Red rounded rectangle */}
+      <rect width="120" height="40" rx="6" fill="#D22D30" />
+      {/* Green badge for SP4N */}
+      <rect x="6" y="8" width="32" height="24" rx="4" fill="#008A4E" />
+      <text x="22" y="22.5" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="9" fontWeight="800" fontFamily="system-ui, sans-serif">
+        SP4N
+      </text>
+      {/* LAPOR! text in bold white */}
+      <text x="76" y="22" dominantBaseline="middle" textAnchor="middle" fill="white" fontSize="15" fontWeight="900" fontFamily="system-ui, sans-serif" letterSpacing="0.5">
         LAPOR!
       </text>
-      <rect x="9" y="26" width="22" height="2" fill="white" />
-      <rect x="9" y="24" width="22" height="2" fill="#E11D48" />
-      <path d="M9 24 H31" stroke="white" strokeWidth="1" />
+      {/* Stylized separator line */}
+      <path d="M 44 8 L 44 32" stroke="white" strokeWidth="1" opacity="0.3" />
     </svg>
   ),
 };
