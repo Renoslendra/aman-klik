@@ -31,7 +31,7 @@ Aplikasi ini telah dideploy secara penuh ke Google Cloud Run dengan performa mak
 
 > [!TIP]
 > **Uji Coba Langsung di Browser Anda:**  
-> 🔗 **[https://amanklik-ai.vercel.app/)**
+> 🔗 **https://amanklik-ai.vercel.app/**
 
 ---
 
