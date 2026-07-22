@@ -26,16 +26,16 @@ const nodeEnv = getEnv("NODE_ENV", "development");
 const isProduction = nodeEnv === "production";
 
 const getProductionRequiredEnv = (key: string, defaultValue = ""): string => {
-  const value = process.env[key] || (!isProduction ? defaultValue : undefined);
+  const value = process.env[key] || defaultValue;
 
-  if (isProduction && !value) {
+  if (isProduction && !value && !defaultValue) {
     throw new Error(`Environment variable ${key} wajib diisi untuk production.`);
   }
 
-  return value ?? defaultValue;
+  return value;
 };
 
-const corsOrigin = getEnv("CORS_ORIGIN", isProduction ? "" : "*");
+const corsOrigin = getEnv("CORS_ORIGIN", isProduction ? "https://amanklik-575126371408.asia-southeast1.run.app" : "*");
 
 if (isProduction && corsOrigin === "*") {
   throw new Error("CORS_ORIGIN tidak boleh '*' saat NODE_ENV=production.");
@@ -49,7 +49,7 @@ export const config: EnvConfig = {
   GEMINI_API_KEY: getProductionRequiredEnv("GEMINI_API_KEY"),
   GEMINI_API_KEY_ANALYSIS: getProductionRequiredEnv("GEMINI_API_KEY_ANALYSIS", process.env.GEMINI_API_KEY || ""),
   JWT_SECRET: getProductionRequiredEnv("JWT_SECRET", "amanklik-default-secret-2026-key-vibe"),
-  GOOGLE_CLIENT_ID: getProductionRequiredEnv("GOOGLE_CLIENT_ID"),
+  GOOGLE_CLIENT_ID: getProductionRequiredEnv("GOOGLE_CLIENT_ID", "575126371408-24cf56dvn0m8gih1ieip7shrk3s2so17.apps.googleusercontent.com"),
 };
 
 export default config;
