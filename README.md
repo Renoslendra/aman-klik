@@ -12,7 +12,8 @@
     <img src="https://img.shields.io/badge/Prisma_7-2D3748?style=for-the-badge&logo=prisma&logoColor=white" alt="Prisma" />
     <img src="https://img.shields.io/badge/Supabase_Postgres-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
     <img src="https://img.shields.io/badge/Gemini_2.5_Flash-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Gemini" />
-    <img src="https://img.shields.io/badge/Google_Cloud_Run-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white" alt="GCP Run" />
+    <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
+    <img src="https://img.shields.io/badge/Railway-131415?style=for-the-badge&logo=railway&logoColor=white" alt="Railway" />
 </p>
 
 <p align="center">
@@ -92,8 +93,8 @@ graph TB
     end
 
     subgraph "🚀 Cloud Deployment Platform"
-        GCP_FE["🌐 Google Cloud Run (Frontend Service)"]
-        GCP_BE["🔗 Google Cloud Run (Backend Service)"]
+        GCP_FE["🌐 Vercel (Frontend Next.js)"]
+        GCP_BE["🔗 Railway (Backend Node.js)"]
     end
 
     UI1 --> GCP_FE
@@ -261,40 +262,34 @@ cd aman-klik
 
 ## 🚀 Panduan Deployment Ke Production
 
-### 1. Deployment Backend ke Google Cloud Run
-Pastikan Docker terinstal jika ingin melakukan build kontainer secara lokal atau gunakan Google Cloud Build:
-1. Deploy service backend:
-   ```bash
-   gcloud run deploy amanklik-backend \
-     --source . \
-     --platform managed \
-     --region asia-southeast1 \
-     --allow-unauthenticated
-   ```
-2. Atur environment variables pada instansi Cloud Run:
+### 1. Deployment Backend ke Railway
+Backend aplikasi ini dirancang untuk mudah dideploy ke Railway.
+1. Buat project baru di [Railway](https://railway.app/).
+2. Hubungkan repository GitHub Anda dan arahkan root directory ke folder `backend`.
+3. Tambahkan environment variables di menu **Variables**:
    - `PORT`: `5000`
    - `NODE_ENV`: `production`
-   - `DATABASE_URL`: `postgresql://...`
+   - `DATABASE_URL`: `postgresql://...` (URL dari Supabase)
    - `GEMINI_API_KEY`: `AIzaSy...`
    - `JWT_SECRET`: `rahasia_jwt_anda`
    - `GOOGLE_CLIENT_ID`: `...apps.googleusercontent.com`
-   - `CORS_ORIGIN`: `https://amanklik-575126371408.asia-southeast1.run.app` (domain frontend Anda)
+   - `CORS_ORIGIN`: `https://amanklik-ai.vercel.app` (domain frontend Vercel Anda)
+4. Railway akan secara otomatis melakukan build dan deploy. Salin URL public backend setelah selesai.
 
-### 2. Deployment Frontend ke Google Cloud Run / Vercel
-Jika menggunakan Google Cloud Run dengan Dockerfile:
-```bash
-gcloud run deploy amanklik-frontend \
-  --source . \
-  --platform managed \
-  --region asia-southeast1 \
-  --allow-unauthenticated \
-  --set-build-env-vars NEXT_PUBLIC_API_URL=https://amanklik-backend-575126371408.asia-southeast1.run.app/api/v1,NEXT_PUBLIC_GOOGLE_CLIENT_ID=575126371408-24cf56dvn0m8gih1ieip7shrk3s2so17.apps.googleusercontent.com
-```
+### 2. Deployment Frontend ke Vercel
+Frontend Next.js sangat optimal jika dideploy ke Vercel.
+1. Buat project baru di [Vercel](https://vercel.com/) dan hubungkan dengan repository GitHub Anda.
+2. Atur **Framework Preset** ke `Next.js`.
+3. Atur **Root Directory** ke `frontend`.
+4. Tambahkan environment variables di pengaturan Vercel:
+   - `NEXT_PUBLIC_API_URL`: `https://<url-backend-railway-anda>/api/v1`
+   - `NEXT_PUBLIC_GOOGLE_CLIENT_ID`: `...apps.googleusercontent.com`
+5. Klik **Deploy** dan tunggu proses selesai. Vercel akan memberikan URL public (misal: `https://amanklik-ai.vercel.app`).
 
 ### 3. Integrasi OAuth Google Console
 Pastikan untuk mendaftarkan URL production frontend ke **Google Cloud Console Credentials OAuth 2.0**:
-- **Authorized JavaScript Origins:** `https://amanklik-575126371408.asia-southeast1.run.app`
-- **Authorized Redirect URIs:** `https://amanklik-575126371408.asia-southeast1.run.app`
+- **Authorized JavaScript Origins:** `https://amanklik-ai.vercel.app`
+- **Authorized Redirect URIs:** `https://amanklik-ai.vercel.app`
 
 ---
 
