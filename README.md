@@ -37,7 +37,7 @@ Aplikasi ini telah dideploy secara penuh ke Vercel dan Railways dengan performa 
 
 ## 🏆 Mengapa Proyek Ini Siap Memenangkan Kompetisi?
 
-Dalam ajang **#JuaraVibeCoding2026**, sebuah aplikasi dinilai berdasarkan inovasi, kualitas arsitektur, kedalaman pemanfaatan AI, serta antarmuka pengguna yang memukau.
+Dalam ajang **#INDONESIANEXT2026**, sebuah aplikasi dinilai berdasarkan inovasi, kualitas arsitektur, kedalaman pemanfaatan AI, serta antarmuka pengguna yang memukau.
 
 | Pilar Penilaian | Kriteria Utama | Solusi & Inovasi AmanKlik AI |
 |---|---|---|
