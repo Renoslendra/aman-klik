@@ -9,3 +9,4 @@ const router = Router();
 router.post("/scan", rateLimiter, optionalAuth as any, AnalysisController.analyze);
 
 export default router;
+

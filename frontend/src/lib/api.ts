@@ -99,3 +99,4 @@ export const api = {
   delete: <T>(endpoint: string, options?: ApiOptions) => 
     request<T>(endpoint, { ...options, method: "DELETE" }),
 };
+

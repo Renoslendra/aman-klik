@@ -9,3 +9,4 @@ const ScrollToTop = dynamic(() => import("@/components/layout/ScrollToTop"), {
 export default function ScrollToTopMount() {
   return <ScrollToTop />;
 }
+

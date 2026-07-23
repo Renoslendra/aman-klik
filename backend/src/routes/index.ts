@@ -24,3 +24,4 @@ router.use("/contact", contactRoutes);
 router.use("/emergency", emergencyRoutes);
 
 export default router;
+

@@ -97,3 +97,4 @@ Menganalisis pesan teks dari pengguna.
 
 ### **GET** `/api/v1/health`
 Mengecek status kesehatan server (uptime, status, timestamp).
+

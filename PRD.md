@@ -138,3 +138,4 @@ Keberhasilan proyek ini akan dievaluasi berdasarkan indikator berikut:
 > [!WARNING]
 > ### ⚠️ Disclaimer (Penafian)
 > **Hasil analisis, rekomendasi tingkat risiko, maupun diagnosis yang dihasilkan oleh kecerdasan buatan (Gemini AI) pada platform AmanKlik AI bersifat edukasi dan sebagai indikasi awal.** Keputusan akhir tetap berada di tangan pengguna. Analisis ini **bukanlah keputusan atau jaminan hukum formal** yang mengikat. Dalam kondisi kejahatan finansial yang nyata, pengguna diwajibkan untuk tetap menghubungi pihak yang berwenang (Bank, Kepolisian, Kominfo).
+

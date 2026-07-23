@@ -11,3 +11,4 @@ router.post("/google", AuthController.googleLogin);
 router.get("/profile", requireAuth as any, AuthController.getProfile);
 
 export default router;
+

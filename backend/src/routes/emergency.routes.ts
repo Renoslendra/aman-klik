@@ -8,3 +8,4 @@ const router = Router();
 router.post("/diagnose", rateLimiter, optionalAuth as any, EmergencyController.diagnose);
 
 export default router;
+

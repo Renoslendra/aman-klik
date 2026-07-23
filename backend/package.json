@@ -43,3 +43,4 @@
     "seed": "tsx src/database/seed.ts"
   }
 }
+

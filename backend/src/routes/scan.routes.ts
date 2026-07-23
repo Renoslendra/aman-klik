@@ -17,3 +17,4 @@ router.get("/stats", ScanController.getStats);
 router.delete("/:id", ScanController.deleteScan);
 
 export default router;
+

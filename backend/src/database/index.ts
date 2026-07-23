@@ -10,3 +10,4 @@ export { ScanRepository } from "./repositories/scan.repository.js";
 export { UserRepository } from "./repositories/user.repository.js";
 export { ReportRepository } from "./repositories/report.repository.js";
 export { ScamPatternRepository } from "./repositories/scamPattern.repository.js";
+

@@ -33,3 +33,4 @@ export interface EmergencyDiagnosisResponse {
   actionPlan: EmergencyActionStep[];
   importantNotes: string[];
 }
+

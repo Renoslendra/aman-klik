@@ -9,3 +9,4 @@ const router = Router();
 router.post("/", optionalAuth as any, ContactController.submit);
 
 export default router;
+

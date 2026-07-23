@@ -12,3 +12,4 @@ export default defineConfig({
     seed: "npx tsx src/database/seed.ts",
   },
 });
+
