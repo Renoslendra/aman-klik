@@ -20,14 +20,14 @@
   <br />
   Solusi Pintar untuk Menganalisis Pesan, Link, dan Chat Screenshot Sebelum Mengklik atau Mengirim Data Pribadi.
   <br />
-  Proyek Khusus untuk Kompetisi <strong>#JuaraVibeCoding2026</strong>.
+  Proyek Khusus untuk Kompetisi <strong>#INDONESIANEXT2026</strong>.
 </p>
 
 <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif" width="100%">
 
 ## 🚀 Live Demo & Akses Cepat
 
-Aplikasi ini telah dideploy secara penuh ke Google Cloud Run dengan performa maksimal dan latensi rendah.
+Aplikasi ini telah dideploy secara penuh ke Vercel dan Railways dengan performa maksimal dan latensi rendah.
 
 > [!TIP]
 > **Uji Coba Langsung di Browser Anda:**  
