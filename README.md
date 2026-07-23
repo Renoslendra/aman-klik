@@ -55,7 +55,7 @@ Fitur ini dirancang khusus untuk membantu pengguna yang telah telanjur mengklik 
 1. **AI Cyber Medic**: Chatbot interaktif bertenaga Gemini AI yang berfungsi melakukan diagnosis cepat mengenai tingkat keparahan insiden keamanan siber yang dialami pengguna serta memberikan pertolongan pertama yang dipersonalisasi.
 2. **Generator Surat Laporan**: Alat untuk menghasilkan draf surat laporan formal secara otomatis (untuk Bank, Kepolisian, atau Kominfo/ADUANKONTEN) berdasarkan data insiden pengguna untuk mempercepat proses birokrasi penindakan hukum.
 3. **Panduan Interaktif Tindakan Cepat**: Langkah-langkah taktis terperinci berdasarkan skenario ancaman siber (seperti APK Terinstal, Akun Diambil Alih, Transfer Uang, Kebocoran Data).
-4. **Hub Kontak Darurat**: Daftar kontak resmi lembaga hukum dan pengaduan penipuan di Indonesia (OJK, Kominfo, Kepolisian, dll) yang dapat dihubungi secara langsung.
+4. **Hub Kontak Darurat**: Direktori kontak resmi perbankan (BCA, BRI, Mandiri, BNI, BSI), e-wallet (DANA, GoPay, OVO), serta lembaga hukum/pemerintah (OJK, Patroli Siber, CekRekening, LAPOR!) lengkap dengan integrasi **logo SVG definisi tinggi** untuk identifikasi instan yang aman dan kredibel.
 
 ---
 
