@@ -28,7 +28,7 @@
 
 ## 🚀 Live Demo & Akses Cepat
 
-Aplikasi ini telah dideploy secara penuh ke Vercel dan Railways dengan performa maksimal dan latensi rendah.
+Aplikasi ini telah dideploy secara penuh ke Vercel dan Railway dengan performa maksimal dan latensi rendah.
 
 > [!TIP]
 > **Uji Coba Langsung di Browser Anda:**  
