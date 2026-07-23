@@ -10,3 +10,4 @@ router.post("/scan", rateLimiter, optionalAuth as any, AnalysisController.analyz
 
 export default router;
 
+

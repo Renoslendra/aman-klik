@@ -9,3 +9,4 @@ router.post("/diagnose", rateLimiter, optionalAuth as any, EmergencyController.d
 
 export default router;
 
+

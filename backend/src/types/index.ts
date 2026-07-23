@@ -34,3 +34,4 @@ export interface EmergencyDiagnosisResponse {
   importantNotes: string[];
 }
 
+

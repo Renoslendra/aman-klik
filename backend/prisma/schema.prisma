@@ -110,3 +110,4 @@ enum ReportStatus {
   RESOLVED
   DISMISSED
 }
+

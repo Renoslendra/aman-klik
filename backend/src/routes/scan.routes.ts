@@ -18,3 +18,4 @@ router.delete("/:id", ScanController.deleteScan);
 
 export default router;
 
+

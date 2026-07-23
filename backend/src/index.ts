@@ -45,3 +45,4 @@ app.listen(config.PORT, () => {
   logger.info(`🚀 Server successfully started in [${config.NODE_ENV}] mode on port [${config.PORT}]`);
 });
 
+
